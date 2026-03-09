@@ -2,6 +2,7 @@
 name: Next.js CMS Architecture Plan
 overview: ""
 todos: []
+isProject: false
 ---
 
 # Next.js CMS Development Plan
