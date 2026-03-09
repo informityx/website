@@ -23,14 +23,20 @@ model User {
 
 // Site-wide settings (singleton)
 model SiteSettings {
-  id                   String   @id @default("default")
-  homePageId           String?   @unique
-  footerAboutVisible   Boolean  @default(true)
-  footerMenuVisible    Boolean  @default(true)
-  footerSocialVisible  Boolean  @default(true)
-  footerSubscribeVisible Boolean @default(true)
-  updatedAt            DateTime @updatedAt
-  homePage             Page?    @relation(fields: [homePageId], references: [id], onDelete: SetNull)
+  id                    String   @id @default("default")
+  homePageId            String?  @unique
+  headerBrandType       String?  // "text" | "logo"
+  headerBrandText       String?
+  headerLogoUrl         String?
+  footerAboutVisible    Boolean  @default(true)
+  footerAboutText       String?  @db.Text
+  footerMenuVisible     Boolean  @default(true)
+  footerSocialVisible   Boolean  @default(true)
+  footerSubscribeVisible Boolean @default(true) // used for Contact info section
+  footerSocialJson      Json?    // { fb: { url, text }, insta, twitter, linkedin, website }
+  footerContactJson     Json?    // { name, email, phone1, phone2, address }
+  updatedAt             DateTime @updatedAt
+  homePage              Page?    @relation(fields: [homePageId], references: [id], onDelete: SetNull)
 }
 
 // Dynamic pages

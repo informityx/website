@@ -20,6 +20,16 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Form fields: black labels and text globally */
+label {
+  color: #000 !important;
+}
+input,
+textarea,
+select {
+  color: #000 !important;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

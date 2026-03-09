@@ -28,9 +28,24 @@ export default async function PublicLayout({
 
   const footerSettings = {
     footerAboutVisible: settings.footerAboutVisible,
+    footerAboutText: settings.footerAboutText ?? null,
     footerMenuVisible: settings.footerMenuVisible,
     footerSocialVisible: settings.footerSocialVisible,
     footerSubscribeVisible: settings.footerSubscribeVisible,
+    footerSocialJson: (settings.footerSocialJson ?? null) as {
+      fb?: { url?: string; text?: string }
+      insta?: { url?: string }
+      twitter?: { url?: string }
+      linkedin?: { url?: string }
+      website?: { url?: string }
+    } | null,
+    footerContactJson: (settings.footerContactJson ?? null) as {
+      name?: string
+      email?: string
+      phone1?: string
+      phone2?: string
+      address?: string
+    } | null,
   }
 
   const footerNavPages = publishedPages.map((p) => ({
@@ -40,9 +55,18 @@ export default async function PublicLayout({
     isHome: p.id === homePageId,
   }))
 
+  const headerBrand =
+    settings.headerBrandType === "logo" && settings.headerLogoUrl
+      ? { type: "logo" as const, logoUrl: settings.headerLogoUrl }
+      : {
+          type: "text" as const,
+          text: settings.headerBrandText?.trim() || "CMS",
+        }
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header
+        brand={headerBrand}
         navPages={navPages}
         showServicesLink={publishedServicesCount > 0}
       />

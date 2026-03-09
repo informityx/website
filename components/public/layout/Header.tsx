@@ -7,18 +7,39 @@ export interface NavPage {
   isHome: boolean
 }
 
+export type HeaderBrand =
+  | { type: "text"; text: string }
+  | { type: "logo"; logoUrl: string }
+
 interface HeaderProps {
+  brand: HeaderBrand
   navPages: NavPage[]
   showServicesLink: boolean
 }
 
-export default function Header({ navPages, showServicesLink }: HeaderProps) {
+export default function Header({
+  brand,
+  navPages,
+  showServicesLink,
+}: HeaderProps) {
   return (
     <header className="border-b bg-white">
       <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold text-gray-900">
-            CMS
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-2xl font-bold text-gray-900"
+          >
+            {brand.type === "logo" ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={brand.logoUrl}
+                alt="Logo"
+                className="h-10 w-auto max-w-[200px] object-contain"
+              />
+            ) : (
+              brand.text
+            )}
           </Link>
           <div className="flex gap-6">
             {navPages.map((page) => (
