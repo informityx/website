@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { SectionData, CardItem, CardServiceItem } from "@/types/cms"
 import ImagePicker from "./ImagePicker"
+import type { LifeCyclePhase, LifeCyclePhaseItem } from "@/components/public/sections/ProjectLifeCycleSection"
 
 interface SectionEditorProps {
   section: SectionData
@@ -466,6 +467,243 @@ export default function SectionEditor({
           </div>
         )
       }
+      case "projectLifeCycle": {
+        const phases: LifeCyclePhase[] = Array.isArray((content as any).phases)
+          ? (content as any).phases
+          : []
+        const inputClass =
+          "w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        const colors = ["blue", "green", "purple", "orange", "red", "grey"] as const
+        const icons = ["document", "chart", "gear", "cog", "check", "rocket", "graduation", "wrench"] as const
+        const addPhase = () => {
+          const num = String(phases.length + 1).padStart(2, "0")
+          setContent({
+            ...content,
+            phases: [
+              ...phases,
+              {
+                number: num,
+                title: "",
+                description: "",
+                color: "blue",
+                icon: "gear",
+                items: [{ heading: "", bullets: [""] }],
+              },
+            ],
+          })
+        }
+        const updatePhase = (idx: number, updates: Partial<LifeCyclePhase>) => {
+          const next = [...phases]
+          next[idx] = { ...next[idx], ...updates }
+          setContent({ ...content, phases: next })
+        }
+        const removePhase = (idx: number) => {
+          const next = phases.filter((_, i) => i !== idx)
+          setContent({ ...content, phases: next })
+        }
+        const updatePhaseItem = (phaseIdx: number, itemIdx: number, updates: Partial<LifeCyclePhaseItem>) => {
+          const next = [...phases]
+          const items = [...(next[phaseIdx].items || [])]
+          items[itemIdx] = { ...items[itemIdx], ...updates }
+          next[phaseIdx] = { ...next[phaseIdx], items }
+          setContent({ ...content, phases: next })
+        }
+        const addPhaseItem = (phaseIdx: number) => {
+          const next = [...phases]
+          const items = [...(next[phaseIdx].items || []), { heading: "", bullets: [""] }]
+          next[phaseIdx] = { ...next[phaseIdx], items }
+          setContent({ ...content, phases: next })
+        }
+        const removePhaseItem = (phaseIdx: number, itemIdx: number) => {
+          const next = [...phases]
+          const items = next[phaseIdx].items.filter((_, i) => i !== itemIdx)
+          next[phaseIdx] = { ...next[phaseIdx], items }
+          setContent({ ...content, phases: next })
+        }
+        const updateBullet = (phaseIdx: number, itemIdx: number, bulletIdx: number, value: string) => {
+          const next = [...phases]
+          const bullets = [...(next[phaseIdx].items[itemIdx]?.bullets || [])]
+          bullets[bulletIdx] = value
+          next[phaseIdx].items[itemIdx] = { ...next[phaseIdx].items[itemIdx], bullets }
+          setContent({ ...content, phases: next })
+        }
+        const addBullet = (phaseIdx: number, itemIdx: number) => {
+          const next = [...phases]
+          const bullets = [...(next[phaseIdx].items[itemIdx]?.bullets || []), ""]
+          next[phaseIdx].items[itemIdx] = { ...next[phaseIdx].items[itemIdx], bullets }
+          setContent({ ...content, phases: next })
+        }
+        const removeBullet = (phaseIdx: number, itemIdx: number, bulletIdx: number) => {
+          const next = [...phases]
+          const bullets = next[phaseIdx].items[itemIdx].bullets.filter((_, i) => i !== bulletIdx)
+          next[phaseIdx].items[itemIdx] = { ...next[phaseIdx].items[itemIdx], bullets }
+          setContent({ ...content, phases: next })
+        }
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Section Title</label>
+              <input
+                type="text"
+                value={(content as any).title || ""}
+                onChange={(e) => setContent({ ...content, title: e.target.value })}
+                className={inputClass}
+                placeholder="Project Delivery Life Cycle"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Description</label>
+              <textarea
+                value={(content as any).description || ""}
+                onChange={(e) => setContent({ ...content, description: e.target.value })}
+                className={inputClass}
+                rows={2}
+                placeholder="A transparent, structured approach..."
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Hint (scroll instruction)</label>
+              <input
+                type="text"
+                value={(content as any).hint || ""}
+                onChange={(e) => setContent({ ...content, hint: e.target.value })}
+                className={inputClass}
+                placeholder="Use arrow buttons, scroll horizontally..."
+              />
+            </div>
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-medium text-gray-700">Phases</label>
+                <button
+                  type="button"
+                  onClick={addPhase}
+                  className="text-lg bg-gray-800 text-gray-100 px-3 py-1 rounded hover:bg-gray-300"
+                >
+                  Add phase
+                </button>
+              </div>
+              <div className="space-y-6 max-h-[500px] overflow-y-auto">
+                {phases.map((phase, pIdx) => (
+                  <div key={pIdx} className="border border-gray-300 rounded-lg p-4 bg-gray-50 space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-700">Phase {phase.number || pIdx + 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => removePhase(pIdx)}
+                        className="text-red-600 hover:text-red-800 text-sm"
+                      >
+                        Remove phase
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-xs font-medium mb-1 text-gray-600">Number</label>
+                        <input
+                          type="text"
+                          value={phase.number}
+                          onChange={(e) => updatePhase(pIdx, { number: e.target.value })}
+                          className={inputClass}
+                          placeholder="01"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium mb-1 text-gray-600">Title</label>
+                        <input
+                          type="text"
+                          value={phase.title}
+                          onChange={(e) => updatePhase(pIdx, { title: e.target.value })}
+                          className={inputClass}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium mb-1 text-gray-600">Description</label>
+                      <input
+                        type="text"
+                        value={phase.description}
+                        onChange={(e) => updatePhase(pIdx, { description: e.target.value })}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-xs font-medium mb-1 text-gray-600">Color</label>
+                        <select
+                          value={phase.color}
+                          onChange={(e) => updatePhase(pIdx, { color: e.target.value as LifeCyclePhase["color"] })}
+                          className={inputClass}
+                        >
+                          {colors.map((c) => (
+                            <option key={c} value={c}>{c}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium mb-1 text-gray-600">Icon</label>
+                        <select
+                          value={phase.icon}
+                          onChange={(e) => updatePhase(pIdx, { icon: e.target.value as LifeCyclePhase["icon"] })}
+                          className={inputClass}
+                        >
+                          {icons.map((i) => (
+                            <option key={i} value={i}>{i}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between items-center mb-1">
+                        <label className="block text-xs font-medium text-gray-600">Sub-sections</label>
+                        <button
+                          type="button"
+                          onClick={() => addPhaseItem(pIdx)}
+                          className="text-sm bg-gray-700 text-white px-2 py-1 rounded"
+                        >
+                          Add sub-section
+                        </button>
+                      </div>
+                      {phase.items?.map((item, iIdx) => (
+                        <div key={iIdx} className="mt-2 p-3 bg-white rounded border border-gray-200 space-y-2">
+                          <div className="flex justify-between">
+                            <input
+                              type="text"
+                              placeholder="Sub-section heading"
+                              value={item.heading}
+                              onChange={(e) => updatePhaseItem(pIdx, iIdx, { heading: e.target.value })}
+                              className={inputClass}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removePhaseItem(pIdx, iIdx)}
+                              className="text-red-600 text-sm ml-2"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-1">Bullets (one per line)</label>
+                            <textarea
+                              value={(item.bullets || []).join("\n")}
+                              onChange={(e) =>
+                                updatePhaseItem(pIdx, iIdx, {
+                                  bullets: e.target.value.split("\n").filter((b) => b.trim() !== ""),
+                                })
+                              }
+                              className={inputClass}
+                              rows={3}
+                              placeholder="Bullet 1&#10;Bullet 2"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      }
       default:
         return (
           <div>
@@ -499,8 +737,8 @@ export default function SectionEditor({
           >
             ▼
           </span>
-          <h3 className="text-lg font-semibold capitalize text-gray-900">
-            {section.type} Section
+          <h3 className="text-lg font-semibold text-gray-900">
+            {section.type === "projectLifeCycle" ? "Project Life Cycle" : section.type.replace(/([A-Z])/g, " $1").replace(/^\w/, (c) => c.toUpperCase())} Section
           </h3>
         </button>
         <div className="flex gap-2">
@@ -521,7 +759,7 @@ export default function SectionEditor({
       </div>
       {isExpanded && (
         <div className="space-y-4">
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4 items-end">
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700">Order</label>
               <input
@@ -539,6 +777,45 @@ export default function SectionEditor({
                 className="mr-2"
               />
               <label className="text-gray-700">Visible</label>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Background color</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={(content as any).backgroundColor || "#ffffff"}
+                  onChange={(e) =>
+                    setContent({ ...content, backgroundColor: e.target.value })
+                  }
+                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={(content as any).backgroundColor || ""}
+                  onChange={(e) =>
+                    setContent({ ...content, backgroundColor: e.target.value || null })
+                  }
+                  className="w-28 px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="transparent"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Padding %</label>
+              <input
+                type="number"
+                min={0}
+                max={20}
+                step={0.5}
+                value={(content as any).paddingPercent ?? 5}
+                onChange={(e) =>
+                  setContent({
+                    ...content,
+                    paddingPercent: e.target.value === "" ? null : parseFloat(e.target.value) || 0,
+                  })
+                }
+                className="w-24 px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
             </div>
           </div>
           {renderEditor()}

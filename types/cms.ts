@@ -38,6 +38,7 @@ export type SectionType =
   | "imageSlider"
   | "headingParagraph"
   | "cards"
+  | "projectLifeCycle"
   | string // Allow for future dynamic types
 
 export interface CardServiceItem {
@@ -56,6 +57,10 @@ export interface CardItem {
 }
 
 export interface SectionContent {
+  // Section layout (all section types)
+  backgroundColor?: string | null
+  paddingPercent?: number | null
+
   // TextImage section
   text?: string
   image?: string
@@ -74,6 +79,16 @@ export interface SectionContent {
   subText?: string
   cardsPerRow?: number
   cards?: CardItem[]
+
+  // Project Life Cycle section
+  phases?: Array<{
+    number: string
+    title: string
+    description: string
+    color: "blue" | "green" | "purple" | "orange" | "red" | "grey"
+    icon: "document" | "chart" | "gear" | "cog" | "check" | "rocket" | "graduation" | "wrench"
+    items: Array<{ heading: string; bullets: string[] }>
+  }>
 
   // Generic for future types
   [key: string]: any

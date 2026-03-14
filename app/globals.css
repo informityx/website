@@ -47,3 +47,16 @@ select {
     text-wrap: balance;
   }
 }
+
+/* Project Life Cycle horizontal scroll */
+.project-lifecycle-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.project-lifecycle-scroll::-webkit-scrollbar-track {
+  background: #e5e7eb;
+  border-radius: 3px;
+}
+.project-lifecycle-scroll::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 3px;
+}

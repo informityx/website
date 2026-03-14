@@ -35,7 +35,7 @@ export default function CardsSection({ content }: CardsSectionProps) {
 
   return (
     <section className="py-12">
-      <div className="container mx-auto px-4">
+      <div className="w-full">
         <div className="w-full mx-auto">
           {(title || subText) && (
             <div className="text-center mb-10">

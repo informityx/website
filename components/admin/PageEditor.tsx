@@ -121,13 +121,193 @@ export default function PageEditor({ page, homePageId = null }: PageEditorProps)
   const getDefaultContent = (type: string) => {
     switch (type) {
       case "textImage":
-        return { text: "", image: "", alignment: "left" }
+        return { backgroundColor: null, paddingPercent: 5, text: "", image: "", alignment: "left" }
       case "imageSlider":
-        return { images: [], autoplay: false }
+        return { backgroundColor: null, paddingPercent: 5, images: [], autoplay: false }
       case "headingParagraph":
-        return { heading: "", paragraphs: [""] }
+        return { backgroundColor: null, paddingPercent: 5, heading: "", paragraphs: [""] }
       case "cards":
-        return { title: "", subText: "", cardsPerRow: 3, cards: [] }
+        return { backgroundColor: null, paddingPercent: 5, title: "", subText: "", cardsPerRow: 3, cards: [] }
+      case "projectLifeCycle":
+        return {
+          backgroundColor: "#f3f4f6",
+          paddingPercent: 5,
+          title: "Project Delivery Life Cycle",
+          description:
+            "A transparent, structured approach to bringing your ideas to life. Each phase ensures quality, communication, and successful project delivery from concept to completion.",
+          hint: "Use arrow buttons, scroll horizontally, or drag to explore all phases.",
+          phases: [
+            {
+              number: "01",
+              title: "Requirements Gathering",
+              description: "Initial discovery and planning with the client.",
+              color: "blue",
+              icon: "document",
+              items: [
+                {
+                  heading: "Client Meeting",
+                  bullets: ["Schedule call", "Discuss goals and expectations", "Identify primary features"],
+                },
+                {
+                  heading: "Requirement Document",
+                  bullets: ["Write feature specs", "Organize by modules or flows", "Share document with client"],
+                },
+                {
+                  heading: "Finalization",
+                  bullets: ["Confirm features", "Lock scope"],
+                },
+              ],
+            },
+            {
+              number: "02",
+              title: "Estimation & Planning",
+              description: "Define timelines and delivery milestones.",
+              color: "green",
+              icon: "chart",
+              items: [
+                {
+                  heading: "Time & Resource Estimates",
+                  bullets: ["Evaluate design/dev/test effort", "Define demo and delivery cycles"],
+                },
+                {
+                  heading: "Sprint Planning",
+                  bullets: ["Divide tasks into bi-weekly sprints", "Assign internal resources"],
+                },
+                {
+                  heading: "Timeline & Roadmap",
+                  bullets: ["Create shared timeline sheet", "Build internal Kanban/project tracker"],
+                },
+              ],
+            },
+            {
+              number: "03",
+              title: "Prototyping (if needed)",
+              description: "Design skeleton UI or clickable prototype.",
+              color: "purple",
+              icon: "gear",
+              items: [
+                {
+                  heading: "Wireframes",
+                  bullets: ["Sketch low-fidelity layout", "Present basic flow"],
+                },
+                {
+                  heading: "Interactive Prototypes",
+                  bullets: ["Use Figma or similar tool", "Link flows and screens"],
+                },
+                {
+                  heading: "Feedback & Approval",
+                  bullets: ["Present to client", "Revise based on input", "Lock final designs"],
+                },
+              ],
+            },
+            {
+              number: "04",
+              title: "Tech Setup & Development",
+              description: "Start coding and infrastructure setup.",
+              color: "orange",
+              icon: "cog",
+              items: [
+                {
+                  heading: "Project Initialization",
+                  bullets: ["Set up GitHub repo", "Configure CI/CD and servers"],
+                },
+                {
+                  heading: "Bi-weekly Sync",
+                  bullets: ["Schedule regular progress demos", "Gather and apply feedback"],
+                },
+                {
+                  heading: "Task Management",
+                  bullets: ["Track with internal board (e.g., Notion, Trello)", "Share updates with client"],
+                },
+              ],
+            },
+            {
+              number: "05",
+              title: "Testing & QA",
+              description: "Ensure product is bug-free and secure.",
+              color: "green",
+              icon: "check",
+              items: [
+                {
+                  heading: "Manual Testing",
+                  bullets: ["Check UX flows, responsiveness", "Cross-browser and device testing"],
+                },
+                {
+                  heading: "Bug Fixes",
+                  bullets: ["Log and prioritize issues", "Patch critical blockers"],
+                },
+                {
+                  heading: "Security Checks",
+                  bullets: ["Sanitize inputs", "SSL and auth layer verification"],
+                },
+                { heading: "Final Walkthrough", bullets: [] },
+              ],
+            },
+            {
+              number: "06",
+              title: "Take the Product Live!",
+              description: "Launch the project to production.",
+              color: "red",
+              icon: "rocket",
+              items: [
+                {
+                  heading: "Deployment",
+                  bullets: ["Push to production (AWS, Vercel, etc.)", "Configure backups and monitoring"],
+                },
+                {
+                  heading: "Domain & SSL",
+                  bullets: ["Setup custom domain", "Apply SSL certs and CDN"],
+                },
+                {
+                  heading: "Launch Plan",
+                  bullets: ["Choose soft launch or full rollout", "Monitor performance in real-time"],
+                },
+              ],
+            },
+            {
+              number: "07",
+              title: "Handover / Client Training",
+              description: "Deliver project assets and training.",
+              color: "blue",
+              icon: "graduation",
+              items: [
+                {
+                  heading: "Access Delivery",
+                  bullets: ["Provide admin accounts", "Share hosting credentials"],
+                },
+                {
+                  heading: "Documentation",
+                  bullets: ["User guides", "Codebase overview (if needed)"],
+                },
+                {
+                  heading: "Training",
+                  bullets: ["Screen recordings", "Live walkthrough sessions"],
+                },
+              ],
+            },
+            {
+              number: "08",
+              title: "Post-Launch Support",
+              description: "Continued support and future planning.",
+              color: "grey",
+              icon: "wrench",
+              items: [
+                {
+                  heading: "Maintenance",
+                  bullets: ["Bug fixes", "Platform updates"],
+                },
+                {
+                  heading: "Feedback Collection",
+                  bullets: ["Monitor user input", "Prioritize suggestions"],
+                },
+                {
+                  heading: "Future Roadmap",
+                  bullets: ["Define Phase 2", "Scope enhancements"],
+                },
+              ],
+            },
+          ],
+        }
       default:
         return {}
     }
@@ -430,6 +610,12 @@ export default function PageEditor({ page, homePageId = null }: PageEditorProps)
                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
               >
                 Add Cards
+              </button>
+              <button
+                onClick={() => addSection("projectLifeCycle")}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+              >
+                Add Project Life Cycle
               </button>
             </div>
           </div>

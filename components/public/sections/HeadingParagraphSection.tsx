@@ -12,7 +12,7 @@ export default function HeadingParagraphSection({
 
   return (
     <section className="py-12">
-      <div className="container mx-auto px-4">
+      <div className="w-full">
         <div className="text-center mb-10 mx-auto">
           {heading && (
             <h2 className="text-3xl md:text-4xl font-bold text-brand-header mb-6">{heading}</h2>
