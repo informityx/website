@@ -1,5 +1,7 @@
 import Header from "@/components/public/layout/Header"
 import Footer from "@/components/public/layout/Footer"
+import CTASection from "@/components/public/CTASection"
+import { GetInTouchModalProvider } from "@/components/public/GetInTouchModal"
 import { prisma } from "@/lib/db/prisma"
 import { getOrCreateSettings } from "@/lib/db/settings"
 
@@ -64,18 +66,23 @@ export default async function PublicLayout({
         }
 
   return (
-    <div className="public-site flex flex-col min-h-screen">
-      <Header
+    <GetInTouchModalProvider>
+      <div className="public-site flex flex-col min-h-screen">
+        <Header
         brand={headerBrand}
         navPages={navPages}
         showServicesLink={publishedServicesCount > 0}
       />
-      <main className="flex-grow">{children}</main>
+      <main className="flex-grow">
+        {children}
+        <CTASection />
+      </main>
       <Footer
         footerSettings={footerSettings}
         menuPages={footerNavPages}
         showServicesInMenu={publishedServicesCount > 0}
       />
-    </div>
+      </div>
+    </GetInTouchModalProvider>
   )
 }

@@ -1,4 +1,5 @@
 import Link from "next/link"
+import OpenContactModalButton from "@/components/public/OpenContactModalButton"
 
 export interface NavPage {
   id: string
@@ -28,7 +29,7 @@ export default function Header({
         <nav className="flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2 text-2xl font-bold text-white hover:text-brand-hover transition-colors"
+            className="flex items-center gap-2 text-2xl font-bold text-white hover:text-brand-hover transition-colors shrink-0"
           >
             {brand.type === "logo" ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -41,7 +42,7 @@ export default function Header({
               brand.text
             )}
           </Link>
-          <div className="flex gap-6">
+          <div className="flex gap-6 justify-center flex-1">
             {navPages.map((page) => (
               <Link
                 key={page.id}
@@ -60,6 +61,9 @@ export default function Header({
               </Link>
             )}
           </div>
+          <OpenContactModalButton className="shrink-0 px-5 py-2 rounded-lg bg-white text-brand-primary font-semibold hover:bg-brand-hover hover:text-white transition-colors">
+            Start project
+          </OpenContactModalButton>
         </nav>
       </div>
     </header>
