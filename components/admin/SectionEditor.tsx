@@ -19,6 +19,7 @@ export default function SectionEditor({
   const [isVisible, setIsVisible] = useState(section.isVisible)
   const [order, setOrder] = useState(section.order)
   const [saving, setSaving] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(true)
 
   useEffect(() => {
     setContent(section.content)
@@ -269,7 +270,7 @@ export default function SectionEditor({
                 {cards.map((card, index) => (
                   <div
                     key={index}
-                    className="border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-3"
+                    className="border border-gray-800 rounded-lg p-4 bg-gray-50 space-y-3"
                   >
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-700">Card {index + 1}</span>
@@ -487,9 +488,21 @@ export default function SectionEditor({
   return (
     <div className="border rounded-lg p-6 bg-white">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold capitalize text-gray-900">
-          {section.type} Section
-        </h3>
+        <button
+          type="button"
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity text-left"
+        >
+          <span
+            className={`inline-block transition-transform ${isExpanded ? "rotate-0" : "rotate-90"}`}
+            aria-hidden
+          >
+            ▼
+          </span>
+          <h3 className="text-lg font-semibold capitalize text-gray-900">
+            {section.type} Section
+          </h3>
+        </button>
         <div className="flex gap-2">
           <button
             onClick={handleSave}
@@ -506,29 +519,31 @@ export default function SectionEditor({
           </button>
         </div>
       </div>
-      <div className="space-y-4">
-        <div className="flex gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">Order</label>
-            <input
-              type="number"
-              value={order}
-              onChange={(e) => setOrder(parseInt(e.target.value) || 0)}
-              className="w-24 px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+      {isExpanded && (
+        <div className="space-y-4">
+          <div className="flex gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Order</label>
+              <input
+                type="number"
+                value={order}
+                onChange={(e) => setOrder(parseInt(e.target.value) || 0)}
+                className="w-24 px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div className="flex items-center pt-8">
+              <input
+                type="checkbox"
+                checked={isVisible}
+                onChange={(e) => setIsVisible(e.target.checked)}
+                className="mr-2"
+              />
+              <label className="text-gray-700">Visible</label>
+            </div>
           </div>
-          <div className="flex items-center pt-8">
-            <input
-              type="checkbox"
-              checked={isVisible}
-              onChange={(e) => setIsVisible(e.target.checked)}
-              className="mr-2"
-            />
-            <label className="text-gray-700">Visible</label>
-          </div>
+          {renderEditor()}
         </div>
-        {renderEditor()}
-      </div>
+      )}
     </div>
   )
 }

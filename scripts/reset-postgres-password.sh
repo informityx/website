@@ -84,10 +84,10 @@ DATABASE_URL="postgresql://postgres:$NEW_PASSWORD@localhost:5432/cms?schema=publ
 
 # NextAuth
 NEXTAUTH_SECRET="your-secret-key-here-generate-with-openssl-rand-base64-32"
-NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_URL="http://localhost:9000"
 
 # Optional: Public URL for sitemap
-NEXT_PUBLIC_URL="http://localhost:3000"
+NEXT_PUBLIC_URL="http://localhost:9000"
 ENVEOF
         echo "✅ .env.local created!"
     fi
