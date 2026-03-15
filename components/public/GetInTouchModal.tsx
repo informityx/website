@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, type ReactNode } from "react"
+import toast from "react-hot-toast"
 import ModalShell from "./ui/ModalShell"
 
 const IconEnvelope = ({ className }: { className?: string }) => (
@@ -95,10 +96,49 @@ export function GetInTouchModalProvider({ children }: { children: ReactNode }) {
 }
 
 function GetInTouchModalContent({ onClose }: { onClose: () => void }) {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // TODO: wire to API
-    onClose()
+    setError(null)
+    setIsSubmitting(true)
+
+    const form = e.currentTarget
+    const formData = new FormData(form)
+
+    const data = {
+      fullName: formData.get("fullName")?.toString() ?? "",
+      email: formData.get("email")?.toString() ?? "",
+      phone: formData.get("phone")?.toString() || null,
+      company: formData.get("company")?.toString() || null,
+      inquiryType: formData.get("inquiryType")?.toString() ?? "",
+      budget: formData.get("budget")?.toString() || null,
+      timeline: formData.get("timeline")?.toString() || null,
+      subject: formData.get("subject")?.toString() ?? "",
+      message: formData.get("message")?.toString() ?? "",
+    }
+
+    try {
+      const res = await fetch("/api/forms/get-in-touch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error ?? "Failed to submit")
+      }
+      toast.success("Message sent successfully! We'll be in touch soon.")
+      onClose()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Something went wrong"
+      setError(message)
+      toast.error(message)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -255,6 +295,12 @@ function GetInTouchModalContent({ onClose }: { onClose: () => void }) {
           </div>
         </div>
 
+        {error && (
+          <div className="rounded-xl bg-red-50 text-red-700 px-4 py-3 text-sm">
+            {error}
+          </div>
+        )}
+
         {/* Buttons */}
         <div className="flex flex-col-reverse sm:flex-row gap-3 justify-end pt-4">
           <button
@@ -266,10 +312,11 @@ function GetInTouchModalContent({ onClose }: { onClose: () => void }) {
           </button>
           <button
             type="submit"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-brand-primary text-white font-semibold hover:bg-brand-hover transition-colors"
+            disabled={isSubmitting}
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-brand-primary text-white font-semibold hover:bg-brand-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <IconEnvelope className="h-5 w-5 shrink-0" />
-            Send Message
+            {isSubmitting ? "Sending..." : "Send Message"}
           </button>
         </div>
       </form>

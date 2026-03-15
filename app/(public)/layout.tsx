@@ -2,6 +2,8 @@ import Header from "@/components/public/layout/Header"
 import Footer from "@/components/public/layout/Footer"
 import CTASection from "@/components/public/CTASection"
 import { GetInTouchModalProvider } from "@/components/public/GetInTouchModal"
+import { ClientOnboardingModalProvider } from "@/components/public/ClientOnboardingModal"
+import { Toaster } from "react-hot-toast"
 import { prisma } from "@/lib/db/prisma"
 import { getOrCreateSettings } from "@/lib/db/settings"
 
@@ -67,6 +69,8 @@ export default async function PublicLayout({
 
   return (
     <GetInTouchModalProvider>
+      <ClientOnboardingModalProvider>
+      <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
       <div className="public-site flex flex-col min-h-screen">
         <Header
         brand={headerBrand}
@@ -83,6 +87,7 @@ export default async function PublicLayout({
         showServicesInMenu={publishedServicesCount > 0}
       />
       </div>
+      </ClientOnboardingModalProvider>
     </GetInTouchModalProvider>
   )
 }

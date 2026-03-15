@@ -92,3 +92,24 @@ model Service {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
+// Form submissions (public, no auth required)
+model GetInTouchSubmission {
+  id          String   @id @default(cuid())
+  fullName    String
+  email       String
+  phone       String?
+  company     String?
+  inquiryType String
+  budget      String?
+  timeline    String?
+  subject     String
+  message     String   @db.Text
+  createdAt   DateTime @default(now())
+}
+
+model ClientOnboardingSubmission {
+  id        String   @id @default(cuid())
+  data      Json     // All form fields as JSON for flexibility
+  createdAt DateTime @default(now())
+}

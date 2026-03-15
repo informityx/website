@@ -11,6 +11,8 @@ const navItems = [
   { href: "/admin/services", label: "Services", icon: "🛠️" },
   { href: "/admin/sections", label: "Sections", icon: "🧩" },
   { href: "/admin/media", label: "Media", icon: "🖼️" },
+  { href: "/admin/get-in-touch", label: "Get In Touch", icon: "✉️" },
+  { href: "/admin/client-onboarding", label: "Client Onboarding", icon: "📋" },
   { href: "/admin/settings", label: "Settings", icon: "⚙️" },
 ]
 
