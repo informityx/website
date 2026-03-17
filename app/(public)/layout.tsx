@@ -12,15 +12,26 @@ export default async function PublicLayout({
 }: {
   children: React.ReactNode
 }) {
-  const [settings, publishedPages, publishedServicesCount] = await Promise.all([
+  const [settings, publishedPages, customTypesForNav] = await Promise.all([
     getOrCreateSettings(),
     prisma.page.findMany({
       where: { isPublished: true },
       orderBy: { updatedAt: "asc" },
       select: { id: true, slug: true, title: true },
     }),
-    prisma.service.count({ where: { isPublished: true } }),
+    prisma.customType.findMany({
+      where: { isPublished: true },
+      orderBy: [{ order: "asc" }, { updatedAt: "asc" }],
+      select: { slug: true, name: true, showInHeader: true, showInFooter: true },
+    }),
   ])
+
+  const headerCustomTypes = customTypesForNav
+    .filter((ct) => ct.showInHeader)
+    .map((ct) => ({ slug: ct.slug, name: ct.name }))
+  const footerCustomTypes = customTypesForNav
+    .filter((ct) => ct.showInFooter)
+    .map((ct) => ({ slug: ct.slug, name: ct.name }))
 
   const homePageId = settings.homePageId ?? null
   const navPages = publishedPages.map((p) => ({
@@ -75,7 +86,7 @@ export default async function PublicLayout({
         <Header
         brand={headerBrand}
         navPages={navPages}
-        showServicesLink={publishedServicesCount > 0}
+        customTypesInHeader={headerCustomTypes}
       />
       <main className="flex-grow">
         {children}
@@ -84,7 +95,7 @@ export default async function PublicLayout({
       <Footer
         footerSettings={footerSettings}
         menuPages={footerNavPages}
-        showServicesInMenu={publishedServicesCount > 0}
+        customTypesInFooter={footerCustomTypes}
       />
       </div>
       </ClientOnboardingModalProvider>

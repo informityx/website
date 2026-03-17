@@ -2,15 +2,15 @@ import { prisma } from "@/lib/db/prisma"
 import Link from "next/link"
 
 export default async function AdminDashboard() {
-  const [pagesCount, servicesCount, sectionsCount] = await Promise.all([
+  const [pagesCount, customTypesCount, sectionsCount] = await Promise.all([
     prisma.page.count(),
-    prisma.service.count(),
+    prisma.customType.count(),
     prisma.section.count(),
   ])
 
   const stats = [
     { label: "Total Pages", value: pagesCount, href: "/admin/pages" },
-    { label: "Total Services", value: servicesCount, href: "/admin/services" },
+    { label: "Custom types", value: customTypesCount, href: "/admin/custom-types" },
     { label: "Total Sections", value: sectionsCount, href: "/admin/sections" },
   ]
 

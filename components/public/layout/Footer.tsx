@@ -33,10 +33,15 @@ interface FooterSettings {
   footerContactJson: FooterContactData | null
 }
 
+export interface CustomTypeNavItem {
+  slug: string
+  name: string
+}
+
 interface FooterProps {
   footerSettings: FooterSettings
   menuPages: FooterNavPage[]
-  showServicesInMenu: boolean
+  customTypesInFooter?: CustomTypeNavItem[]
 }
 
 function googleMapsUrl(address: string): string {
@@ -98,7 +103,7 @@ const IconMapPin = ({ className }: { className?: string }) => (
 export default function Footer({
   footerSettings,
   menuPages,
-  showServicesInMenu,
+  customTypesInFooter = [],
 }: FooterProps) {
   const {
     footerAboutVisible,
@@ -144,16 +149,16 @@ export default function Footer({
                       </Link>
                     </li>
                   ))}
-                  {showServicesInMenu && (
-                    <li>
+                  {customTypesInFooter.map((ct) => (
+                    <li key={ct.slug}>
                       <Link
-                        href="/services"
+                        href={`/${ct.slug}`}
                         className="text-white/90 hover:text-brand-hover text-sm transition-colors"
                       >
-                        Services
+                        {ct.name}
                       </Link>
                     </li>
-                  )}
+                  ))}
                 </ul>
               </div>
             )}

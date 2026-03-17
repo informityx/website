@@ -24,7 +24,8 @@ export interface PageData {
 
 export interface SectionData {
   id: string
-  pageId: string
+  pageId?: string | null
+  customTypeId?: string | null
   type: SectionType
   order: number
   content: SectionContent
@@ -54,6 +55,10 @@ export interface CardItem {
   services?: CardServiceItem[]
   liveDemoUrl?: string
   sourceCodeUrl?: string
+  /** When false, card opens at /basePath/cardSlug instead of modal. Default true. */
+  openInModal?: boolean
+  /** URL segment when openInModal is false (e.g. "ai-application"). */
+  cardSlug?: string
 }
 
 export interface SectionContent {
@@ -104,6 +109,29 @@ export interface ServiceData {
   content?: any
   isPublished: boolean
   order: number
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface CustomTypeData {
+  id: string
+  slug: string
+  name: string
+  showInHeader: boolean
+  showInFooter: boolean
+  isPublished: boolean
+  order: number
+  bannerBackgroundImage?: string | null
+  bannerOverlayColor?: string | null
+  bannerOverlayOpacity?: number | null
+  bannerTitle?: string | null
+  bannerText?: string | null
+  bannerButtonText?: string | null
+  bannerButtonLink?: string | null
+  bannerButtonVisible?: boolean | null
+  bannerImage?: string | null
+  bannerHeightPercent?: number | null
+  sections?: SectionData[]
   createdAt: Date
   updatedAt: Date
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { CardItem } from "@/types/cms"
 import CardDetailModal from "./CardDetailModal"
 
@@ -12,9 +13,11 @@ interface CardsSectionProps {
     cardsPerRow?: number
     cards?: CardItem[]
   }
+  /** When set, cards with openInModal false and cardSlug render as links to /basePath/cardSlug */
+  basePath?: string
 }
 
-export default function CardsSection({ content }: CardsSectionProps) {
+export default function CardsSection({ content, basePath }: CardsSectionProps) {
   const {
     title = "",
     subText = "",
@@ -53,40 +56,62 @@ export default function CardsSection({ content }: CardsSectionProps) {
           )}
           {cards.length > 0 && (
             <div className={`grid grid-cols-1 ${gridCols} gap-6`}>
-              {cards.map((card, index) => (
-                <div
-                  key={index}
-                  className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col"
-                >
-                  {card.image && (
-                    <div className="relative w-full aspect-video bg-gray-100">
-                      <Image
-                        src={card.image}
-                        alt={card.heading}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  )}
-                  <div className="p-5 flex flex-col flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      {card.heading}
-                    </h3>
-                    {card.description && (
-                      <p className="text-gray-600 text-sm flex-1 mb-4">
-                        {card.description}
-                      </p>
+              {cards.map((card, index) => {
+                const openInNewPage =
+                  basePath && card.openInModal === false && card.cardSlug
+                const cardContent = (
+                  <>
+                    {card.image && (
+                      <div className="relative w-full aspect-video bg-gray-100">
+                        <Image
+                          src={card.image}
+                          alt={card.heading}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
                     )}
-                    <button
-                      type="button"
-                      onClick={() => setSelectedCardIndex(index)}
-                      className="mt-auto w-full py-2 px-4 rounded-lg bg-brand-primary text-white font-medium hover:bg-brand-hover transition text-sm"
-                    >
-                      View Details
-                    </button>
+                    <div className="p-5 flex flex-col flex-1">
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        {card.heading}
+                      </h3>
+                      {card.description && (
+                        <p className="text-gray-600 text-sm flex-1 mb-4">
+                          {card.description}
+                        </p>
+                      )}
+                      <span className="mt-auto w-full py-2 px-4 rounded-lg bg-brand-primary text-white font-medium hover:bg-brand-hover transition text-sm inline-block text-center">
+                        View Details
+                      </span>
+                    </div>
+                  </>
+                )
+                return (
+                  <div
+                    key={index}
+                    className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col"
+                  >
+                    {openInNewPage ? (
+                      <Link
+                        href={`/${basePath}/${card.cardSlug}`}
+                        className="flex flex-col flex-1"
+                      >
+                        {cardContent}
+                      </Link>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCardIndex(index)}
+                          className="flex flex-col flex-1 text-left w-full"
+                        >
+                          {cardContent}
+                        </button>
+                      </>
+                    )}
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>

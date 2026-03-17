@@ -63,19 +63,46 @@ model Page {
   siteSettingsAsHome     SiteSettings?
 }
 
-// Flexible sections system
+// Flexible sections system (belongs to Page OR CustomType)
 model Section {
-  id            String   @id @default(cuid())
-  pageId        String
-  page          Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
-  type          String   // "textImage", "imageSlider", "headingParagraph", etc.
-  order         Int      @default(0)
-  content       Json     // Flexible JSON for section-specific data
-  isVisible     Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
+  id            String      @id @default(cuid())
+  pageId        String?
+  page          Page?       @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  customTypeId  String?
+  customType    CustomType? @relation(fields: [customTypeId], references: [id], onDelete: Cascade)
+  type          String      // "textImage", "imageSlider", "headingParagraph", etc.
+  order         Int         @default(0)
+  content       Json        // Flexible JSON for section-specific data
+  isVisible     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
   @@index([pageId, order])
+  @@index([customTypeId, order])
+}
+
+// Custom types (e.g. Portfolio, Who we are, Services) – page-like with sections
+model CustomType {
+  id                     String    @id @default(cuid())
+  slug                   String    @unique
+  name                   String    // Display label
+  showInHeader           Boolean   @default(true)
+  showInFooter           Boolean   @default(true)
+  isPublished            Boolean   @default(false)
+  order                  Int       @default(0)
+  bannerBackgroundImage  String?
+  bannerOverlayColor     String?
+  bannerOverlayOpacity   Float?
+  bannerTitle            String?
+  bannerText             String?
+  bannerButtonText       String?
+  bannerButtonLink       String?
+  bannerButtonVisible    Boolean?
+  bannerImage            String?
+  bannerHeightPercent    Int?      // 0-100, viewport height %
+  sections               Section[]
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 }
 
 // Services

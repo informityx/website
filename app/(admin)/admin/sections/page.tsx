@@ -10,6 +10,12 @@ export default async function SectionsPage() {
           slug: true,
         },
       },
+      customType: {
+        select: {
+          name: true,
+          slug: true,
+        },
+      },
     },
     take: 50,
   })
@@ -47,7 +53,7 @@ export default async function SectionsPage() {
                   Type
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Page
+                  Page / Custom type
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Order
@@ -64,7 +70,11 @@ export default async function SectionsPage() {
                     {section.type}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                    {section.page.title}
+                    {section.page
+                      ? `Page: ${section.page.title}`
+                      : section.customType
+                        ? `Custom: ${section.customType.name}`
+                        : "—"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-900">
                     {section.order}

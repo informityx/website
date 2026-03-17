@@ -7,6 +7,8 @@ import ProjectLifeCycleSection from "./ProjectLifeCycleSection"
 
 interface SectionRendererProps {
   section: SectionData
+  /** When set (e.g. custom type slug), cards with openInNewPage + cardSlug link to /basePath/cardSlug */
+  basePath?: string
 }
 
 function SectionWrapper({
@@ -36,7 +38,7 @@ function SectionWrapper({
   )
 }
 
-function renderSection(section: SectionData) {
+function renderSection(section: SectionData, basePath?: string) {
   const content = (section.content || {}) as Record<string, unknown>
   switch (section.type) {
     case "textImage":
@@ -46,7 +48,7 @@ function renderSection(section: SectionData) {
     case "headingParagraph":
       return <HeadingParagraphSection content={section.content as any} />
     case "cards":
-      return <CardsSection content={section.content as any} />
+      return <CardsSection content={section.content as any} basePath={basePath} />
     case "projectLifeCycle":
       return <ProjectLifeCycleSection content={section.content as any} />
     default:
@@ -60,11 +62,11 @@ function renderSection(section: SectionData) {
   }
 }
 
-export default function SectionRenderer({ section }: SectionRendererProps) {
+export default function SectionRenderer({ section, basePath }: SectionRendererProps) {
   const content = (section.content || {}) as Record<string, unknown>
   return (
     <SectionWrapper content={content}>
-      {renderSection(section)}
+      {renderSection(section, basePath)}
     </SectionWrapper>
   )
 }

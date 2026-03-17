@@ -13,16 +13,21 @@ export type HeaderBrand =
   | { type: "text"; text: string }
   | { type: "logo"; logoUrl: string }
 
+export interface CustomTypeNavItem {
+  slug: string
+  name: string
+}
+
 interface HeaderProps {
   brand: HeaderBrand
   navPages: NavPage[]
-  showServicesLink: boolean
+  customTypesInHeader?: CustomTypeNavItem[]
 }
 
 export default function Header({
   brand,
   navPages,
-  showServicesLink,
+  customTypesInHeader = [],
 }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-brand-primary">
@@ -53,14 +58,15 @@ export default function Header({
                 {page.title}
               </Link>
             ))}
-            {showServicesLink && (
+            {customTypesInHeader.map((ct) => (
               <Link
-                href="/services"
+                key={ct.slug}
+                href={`/${ct.slug}`}
                 className="text-white hover:text-brand-hover transition-colors"
               >
-                Services
+                {ct.name}
               </Link>
-            )}
+            ))}
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <OpenContactModalButton className="px-5 py-2 rounded-lg border-2 border-white text-white font-semibold hover:bg-white hover:text-brand-primary transition-colors">

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { SectionData, CardItem, CardServiceItem } from "@/types/cms"
 import ImagePicker from "./ImagePicker"
+import { slugify } from "@/lib/slugify"
 import type { LifeCyclePhase, LifeCyclePhaseItem } from "@/components/public/sections/ProjectLifeCycleSection"
 
 interface SectionEditorProps {
@@ -340,6 +341,72 @@ export default function SectionEditor({
                         className={inputClass}
                         rows={2}
                       />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium mb-1 text-gray-600">
+                        Open card in
+                      </label>
+                      <div className="flex gap-4 items-center">
+                        <label className="flex items-center gap-1">
+                          <input
+                            type="radio"
+                            name={`card-open-${index}`}
+                            checked={card.openInModal !== false}
+                            onChange={() => {
+                              const next = [...cards]
+                              const { cardSlug: _, ...rest } = next[index]
+                              next[index] = { ...rest, openInModal: true }
+                              setContent({ ...content, cards: next })
+                            }}
+                          />
+                          <span className="text-sm">Modal</span>
+                        </label>
+                        <label className="flex items-center gap-1">
+                          <input
+                            type="radio"
+                            name={`card-open-${index}`}
+                            checked={card.openInModal === false}
+                            onChange={() => {
+                              const next = [...cards]
+                              const slug =
+                                next[index].cardSlug ||
+                                slugify(next[index].heading || "") ||
+                                `card-${index + 1}`
+                              next[index] = {
+                                ...next[index],
+                                openInModal: false,
+                                cardSlug: slug,
+                              }
+                              setContent({ ...content, cards: next })
+                            }}
+                          />
+                          <span className="text-sm">New page</span>
+                        </label>
+                      </div>
+                      {card.openInModal === false && (
+                        <div className="mt-2">
+                          <label className="block text-xs font-medium mb-1 text-gray-600">
+                            Card URL slug
+                          </label>
+                          <input
+                            type="text"
+                            value={card.cardSlug || ""}
+                            onChange={(e) => {
+                              const next = [...cards]
+                              next[index] = {
+                                ...next[index],
+                                cardSlug: e.target.value.trim() || slugify(next[index].heading || "") || `card-${index + 1}`,
+                              }
+                              setContent({ ...content, cards: next })
+                            }}
+                            placeholder={slugify(card.heading || "") || `card-${index + 1}`}
+                            className={inputClass}
+                          />
+                          <p className="text-xs text-gray-500 mt-0.5">
+                            URL will be /custom-type-slug/{card.cardSlug || "..."}
+                          </p>
+                        </div>
+                      )}
                     </div>
                     <div>
                       <div className="flex justify-between items-center mb-1">

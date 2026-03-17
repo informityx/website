@@ -4,15 +4,25 @@ import { prisma } from "@/lib/db/prisma"
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:9000"
 
-  const pages = await prisma.page.findMany({
-    where: { isPublished: true },
-    select: { slug: true, updatedAt: true },
-  })
-
-  const services = await prisma.service.findMany({
-    where: { isPublished: true },
-    select: { slug: true, updatedAt: true },
-  })
+  const [pages, services, customTypes] = await Promise.all([
+    prisma.page.findMany({
+      where: { isPublished: true },
+      select: { slug: true, updatedAt: true },
+    }),
+    prisma.service.findMany({
+      where: { isPublished: true },
+      select: { slug: true, updatedAt: true },
+    }),
+    prisma.customType.findMany({
+      where: { isPublished: true },
+      include: {
+        sections: {
+          where: { type: "cards" },
+          select: { content: true, updatedAt: true },
+        },
+      },
+    }),
+  ])
 
   const staticRoutes = [
     {
@@ -55,5 +65,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  return [...staticRoutes, ...dynamicPages, ...servicePages]
+  const customTypeEntries: MetadataRoute.Sitemap = []
+  for (const ct of customTypes) {
+    customTypeEntries.push({
+      url: `${baseUrl}/${ct.slug}`,
+      lastModified: ct.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    })
+    for (const section of ct.sections) {
+      const content = section.content as { cards?: Array<{ openInModal?: boolean; cardSlug?: string }> }
+      const cards = content?.cards ?? []
+      for (const card of cards) {
+        if (card.openInModal === false && card.cardSlug) {
+          customTypeEntries.push({
+            url: `${baseUrl}/${ct.slug}/${card.cardSlug}`,
+            lastModified: section.updatedAt,
+            changeFrequency: "weekly" as const,
+            priority: 0.5,
+          })
+        }
+      }
+    }
+  }
+
+  return [...staticRoutes, ...dynamicPages, ...servicePages, ...customTypeEntries]
 }
