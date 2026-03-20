@@ -31,15 +31,20 @@ export default function ServiceModal({ service, onClose }: ServiceModalProps) {
             </p>
           </div>
         )}
-        {service.content && (
+        {service.content && typeof service.content === "string" ? (
           <div className="prose max-w-none">
             <div
               dangerouslySetInnerHTML={{
-                __html: JSON.stringify(service.content),
+                __html: service.content,
               }}
             />
           </div>
-        )}
+        ) : null}
+        {service.content && typeof service.content !== "string" ? (
+          <pre className="whitespace-pre-wrap text-sm text-gray-700 bg-gray-50 p-4 rounded-lg overflow-x-auto">
+            {JSON.stringify(service.content, null, 2)}
+          </pre>
+        ) : null}
       </div>
     </ModalShell>
   )

@@ -5,6 +5,9 @@ import PageBanner from "@/components/public/PageBanner"
 import CardDetailPage from "@/components/public/sections/CardDetailPage"
 import type { Metadata } from "next"
 import type { SectionData, PageData, CardItem } from "@/types/cms"
+import { canonicalFromSlug, getBaseUrl } from "@/lib/seo"
+import { getOrCreateSettings } from "@/lib/db/settings"
+import SeoJsonLd from "@/components/seo/SeoJsonLd"
 
 const RESERVED_FIRST_SEGMENTS = ["services", "admin", "admin-login", "api", "media"]
 
@@ -35,11 +38,12 @@ export async function generateMetadata({
 }: DynamicPageProps): Promise<Metadata> {
   const { slug } = await params
   const slugString = slug.join("/")
+  const canonical = canonicalFromSlug(slug)
 
   if (slug.length === 2) {
     const [first] = slug
     if (RESERVED_FIRST_SEGMENTS.includes(first)) {
-      return { title: "Not Found" }
+      return { title: "Not Found", robots: { index: false, follow: false } }
     }
     const customType = await prisma.customType.findUnique({
       where: { slug: first, isPublished: true },
@@ -53,8 +57,23 @@ export async function generateMetadata({
     if (customType) {
       const card = findCardInSections(customType.sections, slug[1])
       if (card) {
+        const title = `${card.heading} | ${customType.name}`
+        const description = card.description || card.overview || undefined
         return {
-          title: `${card.heading} | ${customType.name}`,
+          title,
+          description,
+          alternates: { canonical },
+          openGraph: {
+            type: "website",
+            url: canonical,
+            title,
+            description,
+          },
+          twitter: {
+            card: "summary",
+            title,
+            description,
+          },
         }
       }
     }
@@ -65,9 +84,23 @@ export async function generateMetadata({
   })
 
   if (page?.isPublished) {
+    const title = page.metaTitle || page.title
+    const description = page.metaDescription || undefined
     return {
-      title: page.metaTitle || page.title,
-      description: page.metaDescription || undefined,
+      title,
+      description,
+      alternates: { canonical },
+      openGraph: {
+        type: "website",
+        url: canonical,
+        title,
+        description,
+      },
+      twitter: {
+        card: "summary",
+        title,
+        description,
+      },
     }
   }
 
@@ -76,19 +109,61 @@ export async function generateMetadata({
       where: { slug: slug[0], isPublished: true },
     })
     if (customType) {
+      const title = customType.name
+      const description = customType.bannerText || customType.bannerTitle || undefined
       return {
-        title: customType.name,
+        title,
+        description,
+        alternates: { canonical },
+        openGraph: {
+          type: "website",
+          url: canonical,
+          title,
+          description,
+        },
+        twitter: {
+          card: "summary",
+          title,
+          description,
+        },
       }
     }
   }
 
-  return { title: "Page Not Found" }
+  return { title: "Page Not Found", robots: { index: false, follow: false } }
 }
 
 export default async function DynamicPage({ params }: DynamicPageProps) {
   const { slug } = await params
   const slugString = slug.join("/")
   const firstSegment = slug[0]
+  const settings = await getOrCreateSettings()
+
+  const siteUrl = getBaseUrl()
+  const siteName = settings.headerBrandText?.trim() || "InforMityx"
+  const logoUrl = settings.headerLogoUrl || undefined
+  const footerSocialJson = settings.footerSocialJson as
+    | {
+        fb?: { url?: string }
+        insta?: { url?: string }
+        twitter?: { url?: string }
+        linkedin?: { url?: string }
+        website?: { url?: string }
+      }
+    | null
+  const socialUrls = [
+    footerSocialJson?.fb?.url,
+    footerSocialJson?.insta?.url,
+    footerSocialJson?.twitter?.url,
+    footerSocialJson?.linkedin?.url,
+    footerSocialJson?.website?.url,
+  ].filter(Boolean) as string[]
+
+  const footerContactJson = settings.footerContactJson as
+    | { email?: string; phone1?: string; phone2?: string; address?: string }
+    | null
+
+  const canonical = canonicalFromSlug(slug)
 
   if (RESERVED_FIRST_SEGMENTS.includes(firstSegment)) {
     notFound()
@@ -114,8 +189,24 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
         p.bannerBackgroundImage ||
         p.bannerImage ||
         (p.bannerButtonVisible && p.bannerButtonText)
+      const title = p.metaTitle || p.title
+      const description = p.metaDescription || p.bannerText || undefined
       return (
         <>
+          <SeoJsonLd
+            canonicalUrl={canonical}
+            title={title}
+            description={description}
+            siteName={siteName}
+            siteUrl={siteUrl}
+            logoUrl={logoUrl}
+            socialUrls={socialUrls}
+            contactEmail={footerContactJson?.email || null}
+            contactPhone={
+              footerContactJson?.phone1 || footerContactJson?.phone2 || null
+            }
+            contactAddress={footerContactJson?.address || null}
+          />
           <PageBanner
             bannerBackgroundImage={p.bannerBackgroundImage}
             bannerOverlayColor={p.bannerOverlayColor}
@@ -159,11 +250,27 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
       const card = findCardInSections(customType.sections, slug[1])
       if (card) {
         return (
-          <CardDetailPage
-            card={card}
-            customTypeName={customType.name}
-            customTypeSlug={customType.slug}
-          />
+          <>
+            <SeoJsonLd
+              canonicalUrl={canonical}
+              title={`${card.heading} | ${customType.name}`}
+              description={card.description || card.overview || undefined}
+              siteName={siteName}
+              siteUrl={siteUrl}
+              logoUrl={logoUrl}
+              socialUrls={socialUrls}
+              contactEmail={footerContactJson?.email || null}
+              contactPhone={
+                footerContactJson?.phone1 || footerContactJson?.phone2 || null
+              }
+              contactAddress={footerContactJson?.address || null}
+            />
+            <CardDetailPage
+              card={card}
+              customTypeName={customType.name}
+              customTypeSlug={customType.slug}
+            />
+          </>
         )
       }
     }
@@ -191,8 +298,24 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
         p.bannerBackgroundImage ||
         p.bannerImage ||
         (p.bannerButtonVisible && p.bannerButtonText)
+      const title = p.metaTitle || p.title
+      const description = p.metaDescription || p.bannerText || undefined
       return (
         <>
+          <SeoJsonLd
+            canonicalUrl={canonical}
+            title={title}
+            description={description}
+            siteName={siteName}
+            siteUrl={siteUrl}
+            logoUrl={logoUrl}
+            socialUrls={socialUrls}
+            contactEmail={footerContactJson?.email || null}
+            contactPhone={
+              footerContactJson?.phone1 || footerContactJson?.phone2 || null
+            }
+            contactAddress={footerContactJson?.address || null}
+          />
           <PageBanner
             bannerBackgroundImage={p.bannerBackgroundImage}
             bannerOverlayColor={p.bannerOverlayColor}
@@ -240,8 +363,25 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
         ct.bannerBackgroundImage ||
         ct.bannerImage ||
         (ct.bannerButtonVisible && ct.bannerButtonText)
+
+      const title = ct.name
+      const description = ct.bannerText || ct.bannerTitle || undefined
       return (
         <>
+          <SeoJsonLd
+            canonicalUrl={canonical}
+            title={title}
+            description={description}
+            siteName={siteName}
+            siteUrl={siteUrl}
+            logoUrl={logoUrl}
+            socialUrls={socialUrls}
+            contactEmail={footerContactJson?.email || null}
+            contactPhone={
+              footerContactJson?.phone1 || footerContactJson?.phone2 || null
+            }
+            contactAddress={footerContactJson?.address || null}
+          />
           <PageBanner
             bannerBackgroundImage={ct.bannerBackgroundImage}
             bannerOverlayColor={ct.bannerOverlayColor}
@@ -300,6 +440,18 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
 
   return (
     <>
+      <SeoJsonLd
+        canonicalUrl={canonical}
+        title={p.metaTitle || p.title}
+        description={p.metaDescription || p.bannerText || undefined}
+        siteName={siteName}
+        siteUrl={siteUrl}
+        logoUrl={logoUrl}
+        socialUrls={socialUrls}
+        contactEmail={footerContactJson?.email || null}
+        contactPhone={footerContactJson?.phone1 || footerContactJson?.phone2 || null}
+        contactAddress={footerContactJson?.address || null}
+      />
       <PageBanner
         bannerBackgroundImage={p.bannerBackgroundImage}
         bannerOverlayColor={p.bannerOverlayColor}

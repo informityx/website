@@ -5,35 +5,102 @@ import PageBanner from "@/components/public/PageBanner"
 import type { Metadata } from "next"
 import { getOrCreateSettings } from "@/lib/db/settings"
 import type { SectionData, PageData } from "@/types/cms"
+import { canonicalUrl, getBaseUrl } from "@/lib/seo"
+import SeoJsonLd from "@/components/seo/SeoJsonLd"
 
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getOrCreateSettings()
   if (!settings.homePageId) {
+    const canonical = canonicalUrl("/")
     return {
       title: "Home",
       description: "Welcome to our CMS",
+      alternates: { canonical },
+      openGraph: {
+        type: "website",
+        url: canonical,
+        title: "Home",
+        description: "Welcome to our CMS",
+      },
+      twitter: {
+        card: "summary",
+        title: "Home",
+        description: "Welcome to our CMS",
+      },
     }
   }
   const page = await prisma.page.findUnique({
     where: { id: settings.homePageId },
   })
   if (page && page.isPublished) {
+    const canonical = canonicalUrl("/")
+    const title = page.metaTitle || page.title
+    const description = page.metaDescription || undefined
     return {
-      title: page.metaTitle || page.title,
-      description: page.metaDescription || undefined,
+      title,
+      description,
+      alternates: { canonical },
+      openGraph: {
+        type: "website",
+        url: canonical,
+        title,
+        description,
+      },
+      twitter: {
+        card: "summary",
+        title,
+        description,
+      },
     }
   }
+  const canonical = canonicalUrl("/")
   return {
     title: "Home",
     description: "Welcome to our CMS",
+    alternates: { canonical },
+    openGraph: {
+      type: "website",
+      url: canonical,
+      title: "Home",
+      description: "Welcome to our CMS",
+    },
+    twitter: {
+      card: "summary",
+      title: "Home",
+      description: "Welcome to our CMS",
+    },
   }
 }
 
 export default async function HomePage() {
   const settings = await getOrCreateSettings()
   const homePageId = settings.homePageId
+
+  const siteUrl = getBaseUrl()
+  const siteName = settings.headerBrandText?.trim() || "InforMityx"
+  const logoUrl = settings.headerLogoUrl || undefined
+  const footerSocialJson = settings.footerSocialJson as
+    | {
+        fb?: { url?: string }
+        insta?: { url?: string }
+        twitter?: { url?: string }
+        linkedin?: { url?: string }
+        website?: { url?: string }
+      }
+    | null
+  const socialUrls = [
+    footerSocialJson?.fb?.url,
+    footerSocialJson?.insta?.url,
+    footerSocialJson?.twitter?.url,
+    footerSocialJson?.linkedin?.url,
+    footerSocialJson?.website?.url,
+  ].filter(Boolean) as string[]
+
+  const footerContactJson = settings.footerContactJson as
+    | { email?: string; phone1?: string; phone2?: string; address?: string }
+    | null
 
   if (homePageId) {
     const page = await prisma.page.findUnique({
@@ -54,8 +121,25 @@ export default async function HomePage() {
         p.bannerBackgroundImage ||
         p.bannerImage ||
         (p.bannerButtonVisible && p.bannerButtonText)
+
+      const canonical = canonicalUrl("/")
+      const title = p.metaTitle || p.title
+      const description = p.metaDescription || p.bannerText || undefined
+
       return (
         <>
+          <SeoJsonLd
+            canonicalUrl={canonical}
+            title={title}
+            description={description}
+            siteName={siteName}
+            siteUrl={siteUrl}
+            logoUrl={logoUrl}
+            socialUrls={socialUrls}
+            contactEmail={footerContactJson?.email || null}
+            contactPhone={footerContactJson?.phone1 || footerContactJson?.phone2 || null}
+            contactAddress={footerContactJson?.address || null}
+          />
           <PageBanner
             bannerBackgroundImage={p.bannerBackgroundImage}
             bannerOverlayColor={p.bannerOverlayColor}
@@ -86,8 +170,24 @@ export default async function HomePage() {
     }
   }
 
+  const canonical = canonicalUrl("/")
+  const title = "Home"
+  const description = "Welcome to our CMS"
+
   return (
     <div className="container mx-auto px-4 py-24">
+      <SeoJsonLd
+        canonicalUrl={canonical}
+        title={title}
+        description={description}
+        siteName={siteName}
+        siteUrl={siteUrl}
+        logoUrl={logoUrl}
+        socialUrls={socialUrls}
+        contactEmail={footerContactJson?.email || null}
+        contactPhone={footerContactJson?.phone1 || footerContactJson?.phone2 || null}
+        contactAddress={footerContactJson?.address || null}
+      />
       <div className="text-center max-w-lg mx-auto">
         <h1 className="text-4xl font-bold mb-4 text-brand-header">
           Nothing is created
