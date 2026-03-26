@@ -21,24 +21,24 @@ export default function CardDetailModal({
   currentIndex = 0,
   onNavigate,
 }: CardDetailModalProps) {
-  const hasPrev = onNavigate && allCards.length > 0 && currentIndex > 0
-  const hasNext =
-    onNavigate && allCards.length > 0 && currentIndex < allCards.length - 1
+  const canNavigate = Boolean(onNavigate) && allCards.length > 1
+  const nextIndex = (currentIndex + 1) % allCards.length
+  const prevIndex = (currentIndex - 1 + allCards.length) % allCards.length
   const touchStartXRef = useRef<number | null>(null)
   const touchStartYRef = useRef<number | null>(null)
 
   useEffect(() => {
-    if (!onNavigate) return
+    if (!onNavigate || !canNavigate) return
 
     const handleArrowNavigation = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight" && hasNext) {
+      if (e.key === "ArrowRight") {
         e.preventDefault()
-        onNavigate(currentIndex + 1)
+        onNavigate(nextIndex)
       }
 
-      if (e.key === "ArrowLeft" && hasPrev) {
+      if (e.key === "ArrowLeft") {
         e.preventDefault()
-        onNavigate(currentIndex - 1)
+        onNavigate(prevIndex)
       }
     }
 
@@ -46,7 +46,7 @@ export default function CardDetailModal({
     return () => {
       document.removeEventListener("keydown", handleArrowNavigation)
     }
-  }, [currentIndex, hasNext, hasPrev, onNavigate])
+  }, [canNavigate, nextIndex, onNavigate, prevIndex])
 
   // Support both new services and legacy technologies (migration at render time)
   const services = useMemo((): CardServiceItem[] => {
@@ -67,7 +67,7 @@ export default function CardDetailModal({
   }
 
   const handleTouchEnd = (e: TouchEvent<HTMLDivElement>) => {
-    if (!onNavigate) return
+    if (!onNavigate || !canNavigate) return
     if (touchStartXRef.current === null || touchStartYRef.current === null) return
 
     const touch = e.changedTouches[0]
@@ -79,10 +79,10 @@ export default function CardDetailModal({
 
     // Only handle intentional horizontal swipes.
     if (absDeltaX > absDeltaY && absDeltaX >= swipeThreshold) {
-      if (deltaX < 0 && hasNext) {
-        onNavigate(currentIndex + 1)
-      } else if (deltaX > 0 && hasPrev) {
-        onNavigate(currentIndex - 1)
+      if (deltaX < 0) {
+        onNavigate(nextIndex)
+      } else if (deltaX > 0) {
+        onNavigate(prevIndex)
       }
     }
 
@@ -98,20 +98,20 @@ export default function CardDetailModal({
         onTouchEnd={handleTouchEnd}
       >
         <div className="flex items-center gap-4 mb-6">
-          {hasPrev && (
+          {canNavigate && (
             <button
               type="button"
-              onClick={() => onNavigate!(currentIndex - 1)}
+              onClick={() => onNavigate!(prevIndex)}
               className="text-brand-primary hover:text-brand-hover font-medium transition-colors"
             >
               &larr; Previous
             </button>
           )}
           <h2 className="text-2xl font-bold text-brand-header flex-1">{card.heading}</h2>
-          {hasNext && (
+          {canNavigate && (
             <button
               type="button"
-              onClick={() => onNavigate!(currentIndex + 1)}
+              onClick={() => onNavigate!(nextIndex)}
               className="text-brand-primary hover:text-brand-hover font-medium transition-colors"
             >
               Next &rarr;
