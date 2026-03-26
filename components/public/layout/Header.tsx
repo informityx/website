@@ -1,7 +1,7 @@
 import Link from "next/link"
 import OpenContactModalButton from "@/components/public/OpenContactModalButton"
 import OpenClientOnboardingModalButton from "@/components/public/OpenClientOnboardingModalButton"
-import { Phone, Workflow } from "lucide-react"
+import { List, Workflow } from "lucide-react"
 
 export interface NavPage {
   id: string
@@ -71,7 +71,7 @@ export default function Header({
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <OpenContactModalButton className="px-5 py-2 rounded-lg border-2 border-white text-white font-semibold hover:bg-white hover:text-brand-primary transition-colors">
-              <Phone className="w-5 h-5 md:hidden" aria-hidden />
+              <List className="w-5 h-5 md:hidden" aria-hidden />
               <span className="hidden md:inline">Contact</span>
             </OpenContactModalButton>
             <OpenClientOnboardingModalButton className="px-5 py-2 rounded-lg bg-white text-brand-primary font-semibold hover:bg-brand-hover hover:text-white transition-colors">
