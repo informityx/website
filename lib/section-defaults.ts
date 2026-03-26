@@ -119,6 +119,15 @@ export function getDefaultSectionContent(type: string): Record<string, unknown> 
           },
         ],
       }
+    case "customPostType":
+      return {
+        backgroundColor: null,
+        paddingPercent: 5,
+        customTypeId: "",
+        itemsToShow: 3,
+        viewMoreMode: "default",
+        viewMoreLink: "",
+      }
     default:
       return {}
   }

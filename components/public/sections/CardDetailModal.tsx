@@ -97,26 +97,32 @@ export default function CardDetailModal({
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <div className="flex items-center gap-4 mb-6">
-          {canNavigate && (
+        {canNavigate && (
+          <div className="flex items-center justify-between mb-3">
             <button
               type="button"
               onClick={() => onNavigate!(prevIndex)}
-              className="text-brand-primary hover:text-brand-hover font-medium transition-colors"
+              className="h-8 w-8 shrink-0 rounded-full border border-brand-primary/30 text-brand-primary hover:text-brand-hover hover:border-brand-hover/40 hover:bg-brand-primary/5 transition-colors flex items-center justify-center"
+              aria-label="Previous item"
             >
-              &larr; Previous
+              <span aria-hidden="true" className="text-base leading-none">
+                &larr;
+              </span>
             </button>
-          )}
-          <h2 className="text-2xl font-bold text-brand-header flex-1">{card.heading}</h2>
-          {canNavigate && (
             <button
               type="button"
               onClick={() => onNavigate!(nextIndex)}
-              className="text-brand-primary hover:text-brand-hover font-medium transition-colors"
+              className="h-8 w-8 shrink-0 rounded-full border border-brand-primary/30 text-brand-primary hover:text-brand-hover hover:border-brand-hover/40 hover:bg-brand-primary/5 transition-colors flex items-center justify-center"
+              aria-label="Next item"
             >
-              Next &rarr;
+              <span aria-hidden="true" className="text-base leading-none">
+                &rarr;
+              </span>
             </button>
-          )}
+          </div>
+        )}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-brand-header">{card.heading}</h2>
         </div>
         {card.image && (
           <div className="relative w-full h-64 mb-6 rounded-xl overflow-hidden">

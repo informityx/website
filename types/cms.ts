@@ -40,6 +40,7 @@ export type SectionType =
   | "headingParagraph"
   | "cards"
   | "projectLifeCycle"
+  | "customPostType"
   | string // Allow for future dynamic types
 
 export interface CardServiceItem {
@@ -94,6 +95,12 @@ export interface SectionContent {
     icon: "document" | "chart" | "gear" | "cog" | "check" | "rocket" | "graduation" | "wrench"
     items: Array<{ heading: string; bullets: string[] }>
   }>
+
+  // Custom Post Type section
+  customTypeId?: string
+  itemsToShow?: number
+  viewMoreMode?: "default" | "custom"
+  viewMoreLink?: string
 
   // Generic for future types
   [key: string]: any

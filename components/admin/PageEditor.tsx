@@ -423,6 +423,12 @@ export default function PageEditor({ page, homePageId = null }: PageEditorProps)
               >
                 Add Project Life Cycle
               </button>
+              <button
+                onClick={() => addSection("customPostType")}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+              >
+                Add Custom Post Type
+              </button>
             </div>
           </div>
           <div className="space-y-4">

@@ -12,6 +12,12 @@ interface SectionEditorProps {
   onDelete: (sectionId: string) => void
 }
 
+interface CustomTypeOption {
+  id: string
+  name: string
+  slug: string
+}
+
 export default function SectionEditor({
   section,
   onUpdate,
@@ -22,12 +28,37 @@ export default function SectionEditor({
   const [order, setOrder] = useState(section.order)
   const [saving, setSaving] = useState(false)
   const [isExpanded, setIsExpanded] = useState(true)
+  const [customTypeOptions, setCustomTypeOptions] = useState<CustomTypeOption[]>([])
 
   useEffect(() => {
     setContent(section.content)
     setIsVisible(section.isVisible)
     setOrder(section.order)
   }, [section])
+
+  useEffect(() => {
+    if (section.type !== "customPostType") return
+
+    const loadCustomTypes = async () => {
+      try {
+        const response = await fetch("/api/custom-types")
+        if (!response.ok) throw new Error("Failed to load custom types")
+        const data = await response.json()
+        const items = Array.isArray(data)
+          ? data.map((item) => ({
+              id: String(item.id),
+              name: String(item.name),
+              slug: String(item.slug),
+            }))
+          : []
+        setCustomTypeOptions(items)
+      } catch (error) {
+        console.error("Error loading custom types:", error)
+      }
+    }
+
+    loadCustomTypes()
+  }, [section.type])
 
   const handleSave = async () => {
     setSaving(true)
@@ -771,6 +802,94 @@ export default function SectionEditor({
           </div>
         )
       }
+      case "customPostType": {
+        const inputClass =
+          "w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        const selectedCustomType = customTypeOptions.find(
+          (item) => item.id === ((content as any).customTypeId || "")
+        )
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">
+                Custom post type
+              </label>
+              <select
+                value={(content as any).customTypeId || ""}
+                onChange={(e) =>
+                  setContent({ ...content, customTypeId: e.target.value })
+                }
+                className={inputClass}
+              >
+                <option value="">Select a custom post type</option>
+                {customTypeOptions.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name} ({item.slug})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">
+                Number of items to show
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={24}
+                value={(content as any).itemsToShow ?? 3}
+                onChange={(e) =>
+                  setContent({
+                    ...content,
+                    itemsToShow: Math.max(1, Number(e.target.value) || 1),
+                  })
+                }
+                className="w-full max-w-[140px] px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">
+                View more link
+              </label>
+              <select
+                value={(content as any).viewMoreMode || "default"}
+                onChange={(e) =>
+                  setContent({
+                    ...content,
+                    viewMoreMode: e.target.value as "default" | "custom",
+                  })
+                }
+                className={`${inputClass} max-w-[260px]`}
+              >
+                <option value="default">Default (selected custom post type page)</option>
+                <option value="custom">Custom</option>
+              </select>
+              {(content as any).viewMoreMode !== "custom" && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Default link:{" "}
+                  {selectedCustomType ? `/${selectedCustomType.slug}` : "Select a custom post type"}
+                </p>
+              )}
+            </div>
+            {(content as any).viewMoreMode === "custom" && (
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700">
+                  Custom view more URL
+                </label>
+                <input
+                  type="text"
+                  value={(content as any).viewMoreLink || ""}
+                  onChange={(e) =>
+                    setContent({ ...content, viewMoreLink: e.target.value })
+                  }
+                  className={inputClass}
+                  placeholder="/services or https://example.com/services"
+                />
+              </div>
+            )}
+          </div>
+        )
+      }
       default:
         return (
           <div>
@@ -805,7 +924,12 @@ export default function SectionEditor({
             ▼
           </span>
           <h3 className="text-lg font-semibold text-gray-900">
-            {section.type === "projectLifeCycle" ? "Project Life Cycle" : section.type.replace(/([A-Z])/g, " $1").replace(/^\w/, (c) => c.toUpperCase())} Section
+            {section.type === "projectLifeCycle"
+              ? "Project Life Cycle"
+              : section.type === "customPostType"
+                ? "Custom Post Type"
+                : section.type.replace(/([A-Z])/g, " $1").replace(/^\w/, (c) => c.toUpperCase())}{" "}
+            Section
           </h3>
         </button>
         <div className="flex gap-2">

@@ -91,27 +91,25 @@ export default function ModalShell({
       }}
     >
       <div
-        className={`bg-white rounded-3xl shadow-2xl w-full ${maxWidth} max-h-[85vh] overflow-y-auto`}
+        className={`relative bg-white rounded-3xl shadow-2xl w-full ${maxWidth} max-h-[85vh] overflow-y-auto`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 z-10 flex justify-end p-4 pb-0">
-          <button
-            type="button"
-            onClick={() => {
-              if (hasModalHistoryRef.current) {
-                ignoreNextPopStateRef.current = true
-                hasModalHistoryRef.current = false
-                window.history.back()
-              }
-              onClose()
-            }}
-            className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-300 hover:text-gray-800 transition-colors"
-            aria-label="Close modal"
-          >
-            <span className="text-xl font-light leading-none">×</span>
-          </button>
-        </div>
-        <div className="px-6 pb-6 pt-0 -mt-2">{children}</div>
+        <button
+          type="button"
+          onClick={() => {
+            if (hasModalHistoryRef.current) {
+              ignoreNextPopStateRef.current = true
+              hasModalHistoryRef.current = false
+              window.history.back()
+            }
+            onClose()
+          }}
+          className="modal-close-button absolute top-3 right-3 z-20 h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-300 hover:text-gray-800 transition-colors"
+          aria-label="Close modal"
+        >
+          <span className="text-base font-light leading-none">×</span>
+        </button>
+        <div className="px-6 pb-6 pt-6">{children}</div>
       </div>
     </div>,
     document.body

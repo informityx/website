@@ -4,6 +4,7 @@ import ImageSliderSection from "./ImageSliderSection"
 import HeadingParagraphSection from "./HeadingParagraphSection"
 import CardsSection from "./CardsSection"
 import ProjectLifeCycleSection from "./ProjectLifeCycleSection"
+import CustomPostTypeSection from "./CustomPostTypeSection"
 
 interface SectionRendererProps {
   section: SectionData
@@ -51,6 +52,8 @@ function renderSection(section: SectionData, basePath?: string) {
       return <CardsSection content={section.content as any} basePath={basePath} />
     case "projectLifeCycle":
       return <ProjectLifeCycleSection content={section.content as any} />
+    case "customPostType":
+      return <CustomPostTypeSection content={section.content as any} />
     default:
       return (
         <div className="p-4 border border-yellow-300 bg-yellow-50 rounded">

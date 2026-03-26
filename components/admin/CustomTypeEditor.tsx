@@ -379,6 +379,13 @@ export default function CustomTypeEditor({ customType }: CustomTypeEditorProps) 
               >
                 Add Project Life Cycle
               </button>
+              <button
+                type="button"
+                onClick={() => addSection("customPostType")}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+              >
+                Add Custom Post Type
+              </button>
             </div>
           </div>
           <div className="space-y-4">
