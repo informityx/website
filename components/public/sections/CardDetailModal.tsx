@@ -2,7 +2,8 @@
 
 import { CardItem, CardServiceItem } from "@/types/cms"
 import Image from "next/image"
-import { useMemo } from "react"
+import type { TouchEvent } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import ModalShell from "@/components/public/ui/ModalShell"
 
 interface CardDetailModalProps {
@@ -23,6 +24,29 @@ export default function CardDetailModal({
   const hasPrev = onNavigate && allCards.length > 0 && currentIndex > 0
   const hasNext =
     onNavigate && allCards.length > 0 && currentIndex < allCards.length - 1
+  const touchStartXRef = useRef<number | null>(null)
+  const touchStartYRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (!onNavigate) return
+
+    const handleArrowNavigation = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight" && hasNext) {
+        e.preventDefault()
+        onNavigate(currentIndex + 1)
+      }
+
+      if (e.key === "ArrowLeft" && hasPrev) {
+        e.preventDefault()
+        onNavigate(currentIndex - 1)
+      }
+    }
+
+    document.addEventListener("keydown", handleArrowNavigation)
+    return () => {
+      document.removeEventListener("keydown", handleArrowNavigation)
+    }
+  }, [currentIndex, hasNext, hasPrev, onNavigate])
 
   // Support both new services and legacy technologies (migration at render time)
   const services = useMemo((): CardServiceItem[] => {
@@ -36,9 +60,43 @@ export default function CardDetailModal({
     return []
   }, [card])
 
+  const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
+    const touch = e.changedTouches[0]
+    touchStartXRef.current = touch.clientX
+    touchStartYRef.current = touch.clientY
+  }
+
+  const handleTouchEnd = (e: TouchEvent<HTMLDivElement>) => {
+    if (!onNavigate) return
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return
+
+    const touch = e.changedTouches[0]
+    const deltaX = touch.clientX - touchStartXRef.current
+    const deltaY = touch.clientY - touchStartYRef.current
+    const absDeltaX = Math.abs(deltaX)
+    const absDeltaY = Math.abs(deltaY)
+    const swipeThreshold = 50
+
+    // Only handle intentional horizontal swipes.
+    if (absDeltaX > absDeltaY && absDeltaX >= swipeThreshold) {
+      if (deltaX < 0 && hasNext) {
+        onNavigate(currentIndex + 1)
+      } else if (deltaX > 0 && hasPrev) {
+        onNavigate(currentIndex - 1)
+      }
+    }
+
+    touchStartXRef.current = null
+    touchStartYRef.current = null
+  }
+
   return (
     <ModalShell onClose={onClose} maxWidth="max-w-4xl">
-      <div className="pt-2">
+      <div
+        className="pt-2"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <div className="flex items-center gap-4 mb-6">
           {hasPrev && (
             <button
