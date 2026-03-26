@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, type ReactNode } from "react"
+import { useEffect, useRef, useState, type ReactNode } from "react"
 import { createPortal } from "react-dom"
 
 interface ModalShellProps {
@@ -17,26 +17,78 @@ export default function ModalShell({
   maxWidth = "max-w-2xl",
 }: ModalShellProps) {
   const [isMounted, setIsMounted] = useState(false)
+  const onCloseRef = useRef(onClose)
+  const hasModalHistoryRef = useRef(false)
+  const ignoreNextPopStateRef = useRef(false)
+
+  useEffect(() => {
+    onCloseRef.current = onClose
+  }, [onClose])
 
   useEffect(() => {
     setIsMounted(true)
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose()
+
+    const isTouchDevice =
+      window.matchMedia("(pointer: coarse)").matches ||
+      navigator.maxTouchPoints > 0
+
+    if (isTouchDevice) {
+      // Add a temporary history state so mobile back closes modal first.
+      window.history.pushState(
+        { ...(window.history.state ?? {}), __modalShell: true },
+        "",
+        window.location.href
+      )
+      hasModalHistoryRef.current = true
     }
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return
+
+      if (hasModalHistoryRef.current) {
+        ignoreNextPopStateRef.current = true
+        hasModalHistoryRef.current = false
+        window.history.back()
+      }
+      onCloseRef.current()
+    }
+
+    const handlePopState = () => {
+      if (!hasModalHistoryRef.current) return
+      hasModalHistoryRef.current = false
+
+      if (ignoreNextPopStateRef.current) {
+        ignoreNextPopStateRef.current = false
+        return
+      }
+
+      onCloseRef.current()
+    }
+
     document.addEventListener("keydown", handleEscape)
+    window.addEventListener("popstate", handlePopState)
     document.body.style.overflow = "hidden"
+
     return () => {
       document.removeEventListener("keydown", handleEscape)
+      window.removeEventListener("popstate", handlePopState)
       document.body.style.overflow = "unset"
     }
-  }, [onClose])
+  }, [])
 
   if (!isMounted) return null
 
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
-      onClick={onClose}
+      onClick={() => {
+        if (hasModalHistoryRef.current) {
+          ignoreNextPopStateRef.current = true
+          hasModalHistoryRef.current = false
+          window.history.back()
+        }
+        onClose()
+      }}
     >
       <div
         className={`bg-white rounded-3xl shadow-2xl w-full ${maxWidth} max-h-[85vh] overflow-y-auto`}
@@ -45,7 +97,14 @@ export default function ModalShell({
         <div className="sticky top-0 z-10 flex justify-end p-4 pb-0">
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => {
+              if (hasModalHistoryRef.current) {
+                ignoreNextPopStateRef.current = true
+                hasModalHistoryRef.current = false
+                window.history.back()
+              }
+              onClose()
+            }}
             className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-300 hover:text-gray-800 transition-colors"
             aria-label="Close modal"
           >
