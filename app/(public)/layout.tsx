@@ -6,6 +6,8 @@ import { ClientOnboardingModalProvider } from "@/components/public/ClientOnboard
 import { Toaster } from "react-hot-toast"
 import { prisma } from "@/lib/db/prisma"
 import { getOrCreateSettings } from "@/lib/db/settings"
+import MobileBottomNav from "@/components/public/layout/MobileBottomNav"
+import type { MobileMenuIconKey } from "@/lib/mobileMenuIcons"
 
 export default async function PublicLayout({
   children,
@@ -17,12 +19,18 @@ export default async function PublicLayout({
     prisma.page.findMany({
       where: { isPublished: true },
       orderBy: { updatedAt: "asc" },
-      select: { id: true, slug: true, title: true },
+      select: { id: true, slug: true, title: true, mobileMenuIcon: true },
     }),
     prisma.customType.findMany({
       where: { isPublished: true },
       orderBy: [{ order: "asc" }, { updatedAt: "asc" }],
-      select: { slug: true, name: true, showInHeader: true, showInFooter: true },
+      select: {
+        slug: true,
+        name: true,
+        showInHeader: true,
+        showInFooter: true,
+        mobileMenuIcon: true,
+      },
     }),
   ])
 
@@ -40,6 +48,23 @@ export default async function PublicLayout({
     title: p.title,
     isHome: p.id === homePageId,
   }))
+
+  const mobileNavItems = [
+    ...publishedPages.map((p) => ({
+      id: p.id,
+      label: p.title,
+      href: p.id === homePageId ? "/" : `/${p.slug}`,
+      icon: (p.mobileMenuIcon as MobileMenuIconKey | null) ?? null,
+    })),
+    ...customTypesForNav
+      .filter((ct) => ct.showInHeader)
+      .map((ct) => ({
+        id: ct.slug,
+        label: ct.name,
+        href: `/${ct.slug}`,
+        icon: (ct.mobileMenuIcon as MobileMenuIconKey | null) ?? null,
+      })),
+  ]
 
   const footerSettings = {
     footerAboutVisible: settings.footerAboutVisible,
@@ -81,23 +106,24 @@ export default async function PublicLayout({
   return (
     <GetInTouchModalProvider>
       <ClientOnboardingModalProvider>
-      <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
-      <div className="public-site flex flex-col min-h-screen">
-        <Header
-        brand={headerBrand}
-        navPages={navPages}
-        customTypesInHeader={headerCustomTypes}
-      />
-      <main className="flex-grow">
-        {children}
-        <CTASection />
-      </main>
-      <Footer
-        footerSettings={footerSettings}
-        menuPages={footerNavPages}
-        customTypesInFooter={footerCustomTypes}
-      />
-      </div>
+        <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
+        <div className="public-site flex flex-col min-h-screen pb-20 md:pb-0">
+          <Header
+            brand={headerBrand}
+            navPages={navPages}
+            customTypesInHeader={headerCustomTypes}
+          />
+          <main className="flex-grow">
+            {children}
+            <CTASection />
+          </main>
+          <Footer
+            footerSettings={footerSettings}
+            menuPages={footerNavPages}
+            customTypesInFooter={footerCustomTypes}
+          />
+          <MobileBottomNav items={mobileNavItems} />
+        </div>
       </ClientOnboardingModalProvider>
     </GetInTouchModalProvider>
   )

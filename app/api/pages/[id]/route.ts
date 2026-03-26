@@ -9,6 +9,7 @@ const pageUpdateSchema = z.object({
   metaTitle: z.string().optional().nullable(),
   metaDescription: z.string().optional().nullable(),
   isPublished: z.boolean().optional(),
+  mobileMenuIcon: z.string().optional().nullable(),
   bannerBackgroundImage: z.string().optional().nullable(),
   bannerOverlayColor: z.string().optional().nullable(),
   bannerOverlayOpacity: z.number().min(0).max(1).optional().nullable(),

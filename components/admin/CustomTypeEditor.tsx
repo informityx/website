@@ -7,6 +7,7 @@ import SectionEditor from "./SectionEditor"
 import ImagePicker from "./ImagePicker"
 import { getDefaultSectionContent } from "@/lib/section-defaults"
 import { slugify } from "@/lib/slugify"
+import { MOBILE_MENU_ICON_OPTIONS, type MobileMenuIconKey } from "@/lib/mobileMenuIcons"
 
 interface CustomTypeEditorProps {
   customType?: CustomTypeData
@@ -22,6 +23,7 @@ export default function CustomTypeEditor({ customType }: CustomTypeEditorProps) 
     showInFooter: customType?.showInFooter ?? true,
     isPublished: customType?.isPublished ?? false,
     order: customType?.order ?? 0,
+    mobileMenuIcon: (customType?.mobileMenuIcon as MobileMenuIconKey | null) || "gear",
     bannerBackgroundImage: customType?.bannerBackgroundImage ?? "",
     bannerOverlayColor: customType?.bannerOverlayColor ?? "#ffffff",
     bannerOverlayOpacity: customType?.bannerOverlayOpacity ?? 0.8,
@@ -69,6 +71,7 @@ export default function CustomTypeEditor({ customType }: CustomTypeEditorProps) 
       const method = customType ? "PUT" : "POST"
       const payload = {
         ...formData,
+        mobileMenuIcon: formData.mobileMenuIcon || null,
         bannerBackgroundImage: formData.bannerBackgroundImage || null,
         bannerOverlayColor: formData.bannerOverlayColor || null,
         bannerTitle: formData.bannerTitle || null,
@@ -213,6 +216,28 @@ export default function CustomTypeEditor({ customType }: CustomTypeEditorProps) 
               className="w-20 px-2 py-1 border border-gray-300 rounded text-gray-900"
             />
           </div>
+        </div>
+
+        <div className="mt-4">
+          <label className="block text-sm font-medium mb-2 text-gray-700">
+            Mobile menu icon
+          </label>
+          <select
+            value={(formData.mobileMenuIcon as MobileMenuIconKey) || "gear"}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                mobileMenuIcon: e.target.value as MobileMenuIconKey,
+              })
+            }
+            className="w-full max-w-[320px] px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            {MOBILE_MENU_ICON_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="border-t border-gray-200 pt-6 space-y-4 bg-gray-200 p-4 rounded-lg">

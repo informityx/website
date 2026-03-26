@@ -12,6 +12,7 @@ const customTypeSchema = z.object({
   showInFooter: z.boolean().optional(),
   isPublished: z.boolean().optional(),
   order: z.number().optional(),
+  mobileMenuIcon: z.string().optional().nullable(),
   bannerBackgroundImage: z.string().optional().nullable(),
   bannerOverlayColor: z.string().optional().nullable(),
   bannerOverlayOpacity: z.number().min(0).max(1).optional().nullable(),

@@ -47,6 +47,7 @@ model Page {
   metaTitle              String?
   metaDescription        String?
   isPublished            Boolean   @default(false)
+  mobileMenuIcon        String?
   bannerBackgroundImage  String?
   bannerOverlayColor     String?
   bannerOverlayOpacity   Float?
@@ -90,6 +91,7 @@ model CustomType {
   showInFooter           Boolean   @default(true)
   isPublished            Boolean   @default(false)
   order                  Int       @default(0)
+  mobileMenuIcon        String?
   bannerBackgroundImage  String?
   bannerOverlayColor     String?
   bannerOverlayOpacity   Float?

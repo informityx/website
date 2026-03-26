@@ -48,7 +48,7 @@ export default function Header({
               brand.text
             )}
           </Link>
-          <div className="flex gap-6 justify-center flex-1">
+          <div className="hidden md:flex gap-6 justify-center flex-1">
             {navPages.map((page) => (
               <Link
                 key={page.id}

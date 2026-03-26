@@ -7,6 +7,7 @@ import SectionEditor from "./SectionEditor"
 import SetHomePageButton from "./SetHomePageButton"
 import ImagePicker from "./ImagePicker"
 import { getDefaultSectionContent } from "@/lib/section-defaults"
+import { MOBILE_MENU_ICON_OPTIONS, type MobileMenuIconKey } from "@/lib/mobileMenuIcons"
 
 interface PageEditorProps {
   page?: PageData
@@ -22,6 +23,7 @@ export default function PageEditor({ page, homePageId = null }: PageEditorProps)
     metaTitle: page?.metaTitle || "",
     metaDescription: page?.metaDescription || "",
     isPublished: page?.isPublished || false,
+    mobileMenuIcon: (page?.mobileMenuIcon as MobileMenuIconKey | null) || "gear",
     bannerBackgroundImage: page?.bannerBackgroundImage ?? "",
     bannerOverlayColor: page?.bannerOverlayColor ?? "#ffffff",
     bannerOverlayOpacity: page?.bannerOverlayOpacity ?? 0.8,
@@ -61,6 +63,7 @@ export default function PageEditor({ page, homePageId = null }: PageEditorProps)
       const method = page ? "PUT" : "POST"
       const payload = {
         ...formData,
+        mobileMenuIcon: formData.mobileMenuIcon || null,
         bannerBackgroundImage: formData.bannerBackgroundImage || null,
         bannerOverlayColor: formData.bannerOverlayColor || null,
         bannerTitle: formData.bannerTitle || null,
@@ -368,6 +371,27 @@ export default function PageEditor({ page, homePageId = null }: PageEditorProps)
           <label htmlFor="isPublished" className="text-gray-700">
             Appear in menu (publish to show this page in the header)
           </label>
+        </div>
+        <div className="mt-4">
+          <label className="block text-sm font-medium mb-2 text-gray-700">
+            Mobile menu icon
+          </label>
+          <select
+            value={(formData.mobileMenuIcon as MobileMenuIconKey) || "gear"}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                mobileMenuIcon: e.target.value as MobileMenuIconKey,
+              })
+            }
+            className="w-full max-w-[320px] px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            {MOBILE_MENU_ICON_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </div>
         {page && (
           <div className="flex items-center gap-2">

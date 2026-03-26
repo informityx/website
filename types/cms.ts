@@ -7,6 +7,7 @@ export interface PageData {
   metaTitle?: string | null
   metaDescription?: string | null
   isPublished: boolean
+  mobileMenuIcon?: string | null
   bannerBackgroundImage?: string | null
   bannerOverlayColor?: string | null
   bannerOverlayOpacity?: number | null
@@ -128,6 +129,7 @@ export interface CustomTypeData {
   showInFooter: boolean
   isPublished: boolean
   order: number
+  mobileMenuIcon?: string | null
   bannerBackgroundImage?: string | null
   bannerOverlayColor?: string | null
   bannerOverlayOpacity?: number | null
