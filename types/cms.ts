@@ -36,6 +36,7 @@ export interface SectionData {
 }
 
 export type SectionType =
+  | "hero"
   | "textImage"
   | "imageSlider"
   | "headingParagraph"
@@ -67,6 +68,26 @@ export interface SectionContent {
   // Section layout (all section types)
   backgroundColor?: string | null
   paddingPercent?: number | null
+
+  // Hero section
+  eyebrow?: string
+  headline?: string
+  subheadline?: string
+  supportingLine?: string
+  headlineTag?: "h1" | "h2"
+  contentAlignment?: "left" | "center"
+  visualPosition?: "right" | "left"
+  primaryCtaText?: string
+  primaryCtaLink?: string
+  primaryCtaVisible?: boolean
+  secondaryCtaText?: string
+  secondaryCtaLink?: string
+  secondaryCtaVisible?: boolean
+  heroImage?: string
+  heroImageAlt?: string
+  accentColor?: string
+  textColor?: string
+  subTextColor?: string
 
   // TextImage section
   text?: string

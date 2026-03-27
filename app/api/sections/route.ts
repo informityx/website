@@ -12,6 +12,37 @@ const sectionSchema = z.object({
   isVisible: z.boolean().optional(),
 })
 
+const heroContentSchema = z.object({
+  backgroundColor: z.string().nullable().optional(),
+  paddingPercent: z.number().nullable().optional(),
+  eyebrow: z.string().optional(),
+  headline: z.string().optional(),
+  subheadline: z.string().optional(),
+  supportingLine: z.string().optional(),
+  headlineTag: z.enum(["h1", "h2"]).optional(),
+  contentAlignment: z.enum(["left", "center"]).optional(),
+  visualPosition: z.enum(["left", "right"]).optional(),
+  primaryCtaText: z.string().optional(),
+  primaryCtaLink: z.string().optional(),
+  primaryCtaVisible: z.boolean().optional(),
+  secondaryCtaText: z.string().optional(),
+  secondaryCtaLink: z.string().optional(),
+  secondaryCtaVisible: z.boolean().optional(),
+  heroImage: z.string().optional(),
+  heroImageAlt: z.string().optional(),
+  accentColor: z.string().optional(),
+  textColor: z.string().optional(),
+  subTextColor: z.string().optional(),
+})
+
+function parseSectionContent(type: string, content: unknown) {
+  const normalized = (content ?? {}) as object
+  if (type === "hero") {
+    return heroContentSchema.parse(normalized)
+  }
+  return normalized
+}
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const pageId = searchParams.get("pageId")
@@ -64,14 +95,14 @@ export async function POST(request: NextRequest) {
             pageId: data.pageId!,
             type: data.type,
             order: data.order ?? 0,
-            content: (data.content ?? {}) as object,
+            content: parseSectionContent(data.type, data.content),
             isVisible: data.isVisible ?? true,
           }
         : {
             customTypeId: data.customTypeId!,
             type: data.type,
             order: data.order ?? 0,
-            content: (data.content ?? {}) as object,
+            content: parseSectionContent(data.type, data.content),
             isVisible: data.isVisible ?? true,
           },
     })

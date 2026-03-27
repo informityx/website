@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { prisma } from "@/lib/db/prisma"
 import SectionRenderer from "@/components/public/sections/SectionRenderer"
-import PageBanner from "@/components/public/PageBanner"
 import type { Metadata } from "next"
 import { getOrCreateSettings } from "@/lib/db/settings"
 import type { SectionData, PageData } from "@/types/cms"
@@ -115,12 +114,6 @@ export default async function HomePage() {
 
     if (page && page.isPublished) {
       const p = page as PageData
-      const showBanner =
-        p.bannerTitle ||
-        p.bannerText ||
-        p.bannerBackgroundImage ||
-        p.bannerImage ||
-        (p.bannerButtonVisible && p.bannerButtonText)
 
       const canonical = canonicalUrl("/")
       const title = p.metaTitle || p.title
@@ -140,7 +133,8 @@ export default async function HomePage() {
             contactPhone={footerContactJson?.phone1 || footerContactJson?.phone2 || null}
             contactAddress={footerContactJson?.address || null}
           />
-          <PageBanner
+          {/* Render homepage from sections only for now. */}
+          {/* <PageBanner
             bannerBackgroundImage={p.bannerBackgroundImage}
             bannerOverlayColor={p.bannerOverlayColor}
             bannerOverlayOpacity={p.bannerOverlayOpacity}
@@ -151,11 +145,12 @@ export default async function HomePage() {
             bannerButtonVisible={p.bannerButtonVisible}
             bannerImage={p.bannerImage}
             bannerHeightPercent={p.bannerHeightPercent}
-          />
+          /> */}
           <div className="container mx-auto px-4 py-8">
-            {!showBanner && (
+            {/* Keep title fallback disabled; homepage should be section-driven. */}
+            {/* {!showBanner && (
               <h1 className="text-4xl font-bold mb-8">{p.title}</h1>
-            )}
+            )} */}
             <div className="space-y-12">
               {page.sections.map((section) => (
                 <SectionRenderer
@@ -188,6 +183,7 @@ export default async function HomePage() {
         contactPhone={footerContactJson?.phone1 || footerContactJson?.phone2 || null}
         contactAddress={footerContactJson?.address || null}
       />
+      {/* Keep this empty-state temporarily until homepage sections are configured in admin. */}
       <div className="text-center max-w-lg mx-auto">
         <h1 className="text-4xl font-bold mb-4 text-brand-header">
           Nothing is created

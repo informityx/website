@@ -3,6 +3,29 @@
  */
 export function getDefaultSectionContent(type: string): Record<string, unknown> {
   switch (type) {
+    case "hero":
+      return {
+        backgroundColor: "#020617",
+        paddingPercent: 6,
+        eyebrow: "",
+        headline: "",
+        subheadline: "",
+        supportingLine: "",
+        headlineTag: "h1",
+        contentAlignment: "left",
+        visualPosition: "right",
+        primaryCtaText: "",
+        primaryCtaLink: "",
+        primaryCtaVisible: true,
+        secondaryCtaText: "",
+        secondaryCtaLink: "",
+        secondaryCtaVisible: true,
+        heroImage: "",
+        heroImageAlt: "",
+        accentColor: "#3b82f6",
+        textColor: "#ffffff",
+        subTextColor: "#cbd5e1",
+      }
     case "textImage":
       return { backgroundColor: null, paddingPercent: 5, text: "", image: "", alignment: "left" }
     case "imageSlider":

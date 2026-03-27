@@ -87,6 +87,222 @@ export default function SectionEditor({
 
   const renderEditor = () => {
     switch (section.type) {
+      case "hero":
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Eyebrow</label>
+              <input
+                type="text"
+                value={(content as any).eyebrow || ""}
+                onChange={(e) =>
+                  setContent({ ...content, eyebrow: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Optional small label above headline"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Headline</label>
+              <input
+                type="text"
+                value={(content as any).headline || ""}
+                onChange={(e) =>
+                  setContent({ ...content, headline: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Build Intelligent Digital Products That Scale"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Subheadline</label>
+              <textarea
+                value={(content as any).subheadline || ""}
+                onChange={(e) =>
+                  setContent({ ...content, subheadline: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Supporting line</label>
+              <textarea
+                value={(content as any).supportingLine || ""}
+                onChange={(e) =>
+                  setContent({ ...content, supportingLine: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                rows={2}
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700">Headline tag</label>
+                <select
+                  value={(content as any).headlineTag || "h1"}
+                  onChange={(e) =>
+                    setContent({ ...content, headlineTag: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="h1">H1</option>
+                  <option value="h2">H2</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700">Content alignment</label>
+                <select
+                  value={(content as any).contentAlignment || "left"}
+                  onChange={(e) =>
+                    setContent({ ...content, contentAlignment: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Visual position</label>
+              <select
+                value={(content as any).visualPosition || "right"}
+                onChange={(e) =>
+                  setContent({ ...content, visualPosition: e.target.value })
+                }
+                className="w-full max-w-[220px] px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="right">Right</option>
+                <option value="left">Left</option>
+              </select>
+            </div>
+            <div className="space-y-3 border border-gray-200 rounded-lg p-4 bg-gray-50">
+              <p className="text-sm font-medium text-gray-700">Primary CTA</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  value={(content as any).primaryCtaText || ""}
+                  onChange={(e) =>
+                    setContent({ ...content, primaryCtaText: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Start Your Project"
+                />
+                <input
+                  type="text"
+                  value={(content as any).primaryCtaLink || ""}
+                  onChange={(e) =>
+                    setContent({ ...content, primaryCtaLink: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="/contact"
+                />
+              </div>
+              <label className="flex items-center text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={(content as any).primaryCtaVisible ?? true}
+                  onChange={(e) =>
+                    setContent({ ...content, primaryCtaVisible: e.target.checked })
+                  }
+                  className="mr-2"
+                />
+                Show primary CTA
+              </label>
+            </div>
+            <div className="space-y-3 border border-gray-200 rounded-lg p-4 bg-gray-50">
+              <p className="text-sm font-medium text-gray-700">Secondary CTA</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  value={(content as any).secondaryCtaText || ""}
+                  onChange={(e) =>
+                    setContent({ ...content, secondaryCtaText: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Book Free Consultation"
+                />
+                <input
+                  type="text"
+                  value={(content as any).secondaryCtaLink || ""}
+                  onChange={(e) =>
+                    setContent({ ...content, secondaryCtaLink: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="/contact"
+                />
+              </div>
+              <label className="flex items-center text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={(content as any).secondaryCtaVisible ?? true}
+                  onChange={(e) =>
+                    setContent({ ...content, secondaryCtaVisible: e.target.checked })
+                  }
+                  className="mr-2"
+                />
+                Show secondary CTA
+              </label>
+            </div>
+            <div>
+              <ImagePicker
+                value={(content as any).heroImage || ""}
+                onChange={(url) =>
+                  setContent({ ...content, heroImage: url })
+                }
+                label="Hero visual image"
+                prefix="hero-image"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Hero image alt text</label>
+              <input
+                type="text"
+                value={(content as any).heroImageAlt || ""}
+                onChange={(e) =>
+                  setContent({ ...content, heroImageAlt: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700">Accent color</label>
+                <input
+                  type="color"
+                  value={(content as any).accentColor || "#3b82f6"}
+                  onChange={(e) =>
+                    setContent({ ...content, accentColor: e.target.value })
+                  }
+                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700">Text color</label>
+                <input
+                  type="color"
+                  value={(content as any).textColor || "#ffffff"}
+                  onChange={(e) =>
+                    setContent({ ...content, textColor: e.target.value })
+                  }
+                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700">Sub text color</label>
+                <input
+                  type="color"
+                  value={(content as any).subTextColor || "#cbd5e1"}
+                  onChange={(e) =>
+                    setContent({ ...content, subTextColor: e.target.value })
+                  }
+                  className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+        )
       case "textImage":
         return (
           <div className="space-y-4">
@@ -924,7 +1140,9 @@ export default function SectionEditor({
             ▼
           </span>
           <h3 className="text-lg font-semibold text-gray-900">
-            {section.type === "projectLifeCycle"
+            {section.type === "hero"
+              ? "Hero"
+              : section.type === "projectLifeCycle"
               ? "Project Life Cycle"
               : section.type === "customPostType"
                 ? "Custom Post Type"

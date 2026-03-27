@@ -198,7 +198,7 @@ export default function PageEditor({ page, homePageId = null }: PageEditorProps)
         </div>
 
         <div className="border-t border-gray-200 pt-6 space-y-4 bg-gray-200 p-4 rounded-lg">
-          <h2 className="text-lg font-semibold text-gray-900">Page banner</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Hero visual/background settings</h2>
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700">
                 Banner height (% of viewport)
@@ -417,6 +417,12 @@ export default function PageEditor({ page, homePageId = null }: PageEditorProps)
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Sections</h2>
             <div className="flex gap-2">
+              <button
+                onClick={() => addSection("hero")}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+              >
+                Add Hero
+              </button>
               <button
                 onClick={() => addSection("textImage")}
                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"

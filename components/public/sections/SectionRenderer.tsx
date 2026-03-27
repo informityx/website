@@ -5,6 +5,7 @@ import HeadingParagraphSection from "./HeadingParagraphSection"
 import CardsSection from "./CardsSection"
 import ProjectLifeCycleSection from "./ProjectLifeCycleSection"
 import CustomPostTypeSection from "./CustomPostTypeSection"
+import HeroSection from "./HeroSection"
 
 interface SectionRendererProps {
   section: SectionData
@@ -42,6 +43,8 @@ function SectionWrapper({
 function renderSection(section: SectionData, basePath?: string) {
   const content = (section.content || {}) as Record<string, unknown>
   switch (section.type) {
+    case "hero":
+      return <HeroSection content={section.content as any} />
     case "textImage":
       return <TextImageSection content={section.content as any} />
     case "imageSlider":

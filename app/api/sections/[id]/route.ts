@@ -10,6 +10,37 @@ const sectionUpdateSchema = z.object({
   isVisible: z.boolean().optional(),
 })
 
+const heroContentSchema = z.object({
+  backgroundColor: z.string().nullable().optional(),
+  paddingPercent: z.number().nullable().optional(),
+  eyebrow: z.string().optional(),
+  headline: z.string().optional(),
+  subheadline: z.string().optional(),
+  supportingLine: z.string().optional(),
+  headlineTag: z.enum(["h1", "h2"]).optional(),
+  contentAlignment: z.enum(["left", "center"]).optional(),
+  visualPosition: z.enum(["left", "right"]).optional(),
+  primaryCtaText: z.string().optional(),
+  primaryCtaLink: z.string().optional(),
+  primaryCtaVisible: z.boolean().optional(),
+  secondaryCtaText: z.string().optional(),
+  secondaryCtaLink: z.string().optional(),
+  secondaryCtaVisible: z.boolean().optional(),
+  heroImage: z.string().optional(),
+  heroImageAlt: z.string().optional(),
+  accentColor: z.string().optional(),
+  textColor: z.string().optional(),
+  subTextColor: z.string().optional(),
+})
+
+function parseSectionContent(type: string, content: unknown) {
+  const normalized = (content ?? {}) as object
+  if (type === "hero") {
+    return heroContentSchema.parse(normalized)
+  }
+  return normalized
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -23,10 +54,29 @@ export async function PUT(
     const { id } = await params
     const body = await request.json()
     const data = sectionUpdateSchema.parse(body)
+    const existing = await prisma.section.findUnique({ where: { id } })
+    if (!existing) {
+      return NextResponse.json({ error: "Section not found" }, { status: 404 })
+    }
+
+    const nextType = data.type ?? existing.type
+    const updateData: {
+      type?: string
+      order?: number
+      content?: object
+      isVisible?: boolean
+    } = {
+      type: data.type,
+      order: data.order,
+      isVisible: data.isVisible,
+    }
+    if (data.content !== undefined) {
+      updateData.content = parseSectionContent(nextType, data.content)
+    }
 
     const section = await prisma.section.update({
       where: { id },
-      data,
+      data: updateData,
     })
 
     return NextResponse.json(section)

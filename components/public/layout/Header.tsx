@@ -31,19 +31,20 @@ export default function Header({
   customTypesInHeader = [],
 }: HeaderProps) {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-brand-primary">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white">
       <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center justify-between">
           <Link
             href="/"
             className="flex items-center gap-2 text-2xl font-bold text-white hover:text-brand-hover transition-colors shrink-0"
           >
-            {brand.type === "logo" ? (
+            {
+            brand.type === "logo" ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={brand.logoUrl}
                 alt="Logo"
-                className="h-12 w-auto max-w-[500px] object-contain"
+                className="h-12 w-auto max-w-[450px] object-contain"
               />
             ) : (
               brand.text
@@ -54,7 +55,7 @@ export default function Header({
               <Link
                 key={page.id}
                 href={page.isHome ? "/" : `/${page.slug}`}
-                className="text-white hover:text-brand-hover transition-colors"
+                className="text-brand-primary font-bold hover:text-brand-hover transition-colors"
               >
                 {page.title}
               </Link>
@@ -63,18 +64,18 @@ export default function Header({
               <Link
                 key={ct.slug}
                 href={`/${ct.slug}`}
-                className="text-white hover:text-brand-hover transition-colors"
+                className="text-brand-primary font-bold hover:text-brand-hover transition-colors"
               >
                 {ct.name}
               </Link>
             ))}
           </div>
           <div className="flex items-center gap-3 shrink-0">
-            <OpenContactModalButton className="px-5 py-2 rounded-lg border-2 border-white text-white font-semibold hover:bg-white hover:text-brand-primary transition-colors">
+            <OpenContactModalButton className="px-5 py-2 rounded-lg bg-brand-primary text-white font-semibold hover:bg-brand-hover transition-colors">
               <List className="w-5 h-5 md:hidden" aria-hidden />
               <span className="hidden md:inline">Contact</span>
             </OpenContactModalButton>
-            <OpenClientOnboardingModalButton className="px-5 py-2 rounded-lg bg-white text-brand-primary font-semibold hover:bg-brand-hover hover:text-white transition-colors">
+            <OpenClientOnboardingModalButton className="px-5 py-2 rounded-lg bg-brand-primary text-white font-semibold hover:bg-brand-hover transition-colors">
               <Workflow className="w-5 h-5 md:hidden" aria-hidden />
               <span className="hidden md:inline">Start project</span>
             </OpenClientOnboardingModalButton>
