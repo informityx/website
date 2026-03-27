@@ -15,10 +15,11 @@ function assert(cond: boolean, msg: string) {
 
 async function main() {
   const settings = await prisma.siteSettings.findUnique({ where: { id: "default" } })
-  assert(!!settings?.homePageId, "SiteSettings.homePageId must be set")
+  const homePageId = settings?.homePageId
+  assert(!!homePageId, "SiteSettings.homePageId must be set")
 
   const sections = await prisma.section.findMany({
-    where: { pageId: settings.homePageId! },
+    where: { pageId: homePageId },
     orderBy: { order: "asc" },
   })
 
@@ -55,7 +56,7 @@ async function main() {
   )
 
   console.log("verify-home-mvp-section: all checks passed")
-  console.log("  homePageId:", settings.homePageId)
+  console.log("  homePageId:", homePageId)
   console.log("  section id:", mvp!.id, "order:", mvp!.order, "visible:", mvp!.isVisible)
 }
 
