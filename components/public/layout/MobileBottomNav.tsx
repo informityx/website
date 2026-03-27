@@ -21,7 +21,7 @@ export default function MobileBottomNav({
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-brand-hover border-t border-white/10">
-      <div className="px-2 py-2 flex items-center overflow-x-auto gap-2">
+      <div className="flex items-center overflow-x-auto gap-2">
         {items.map((item) => {
           const isActive =
             item.href === "/"
@@ -34,10 +34,10 @@ export default function MobileBottomNav({
               href={item.href}
               aria-label={item.label}
               className={[
-                "flex flex-col items-center justify-center min-w-[56px] h-[56px] rounded-lg transition",
+                "flex flex-col items-center justify-center min-w-[56px] h-[56px] transition",
                 isActive
                   ? "bg-white text-brand-primary"
-                  : "text-white hover:text-brand-primary hover:bg-white",
+                  : "hover:text-brand-primary hover:bg-white",
               ].join(" ")}
             >
               <MobileMenuIcon icon={item.icon} className="w-6 h-6" />
