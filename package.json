@@ -13,7 +13,9 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:baseline": "prisma db execute --file ./prisma/migrations/20250316000000_add_custom_types/migration.sql && prisma migrate resolve --applied \"20250316000000_add_custom_types\" && prisma migrate resolve --applied \"20260309212248_add_page_banner_fields\" && prisma generate",
     "db:studio": "prisma studio",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "cms:add-home-mvp": "tsx scripts/add-home-mvp-section.ts",
+    "cms:verify-home-mvp": "tsx scripts/verify-home-mvp-section.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

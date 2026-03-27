@@ -417,42 +417,370 @@ export default function SectionEditor({
           </div>
         )
       }
-      case "headingParagraph":
+      case "headingParagraph": {
+        const hpLayout = (content as any).layout === "split" ? "split" : "simple"
+        const hpInput =
+          "w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700">Heading</label>
-              <input
-                type="text"
-                value={(content as any).heading || ""}
-                onChange={(e) =>
-                  setContent({ ...content, heading: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700">
-                Paragraphs (one per line)
-              </label>
-              <textarea
-                value={
-                  Array.isArray((content as any).paragraphs)
-                    ? (content as any).paragraphs.join("\n")
-                    : ""
-                }
+              <label className="block text-sm font-medium mb-2 text-gray-700">Layout</label>
+              <select
+                value={hpLayout}
                 onChange={(e) =>
                   setContent({
                     ...content,
-                    paragraphs: e.target.value.split("\n").filter((p) => p),
+                    layout: e.target.value === "simple" ? "simple" : "split",
                   })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                rows={6}
-              />
+                className={hpInput}
+              >
+                <option value="simple">Simple — heading + paragraphs (centered)</option>
+                <option value="split">Split — marketing / MVP block (dark card, optional image)</option>
+              </select>
             </div>
+            {hpLayout === "simple" ? (
+              <>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">Heading</label>
+                  <input
+                    type="text"
+                    value={(content as any).heading || ""}
+                    onChange={(e) =>
+                      setContent({ ...content, heading: e.target.value })
+                    }
+                    className={hpInput}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">
+                    Paragraphs (one per line)
+                  </label>
+                  <textarea
+                    value={
+                      Array.isArray((content as any).paragraphs)
+                        ? (content as any).paragraphs.join("\n")
+                        : ""
+                    }
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        paragraphs: e.target.value.split("\n").filter((p) => p),
+                      })
+                    }
+                    className={hpInput}
+                    rows={6}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">Eyebrow</label>
+                  <input
+                    type="text"
+                    value={(content as any).eyebrow || ""}
+                    onChange={(e) =>
+                      setContent({ ...content, eyebrow: e.target.value })
+                    }
+                    className={hpInput}
+                    placeholder="Section label above headline"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">Headline</label>
+                  <input
+                    type="text"
+                    value={(content as any).heading || ""}
+                    onChange={(e) =>
+                      setContent({ ...content, heading: e.target.value })
+                    }
+                    className={hpInput}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">Subheadline</label>
+                  <textarea
+                    value={(content as any).subheadline || ""}
+                    onChange={(e) =>
+                      setContent({ ...content, subheadline: e.target.value })
+                    }
+                    className={hpInput}
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">Body</label>
+                  <textarea
+                    value={(content as any).body || ""}
+                    onChange={(e) =>
+                      setContent({ ...content, body: e.target.value })
+                    }
+                    className={hpInput}
+                    rows={5}
+                    placeholder="Supporting paragraph"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">
+                    Value points (one per line)
+                  </label>
+                  <textarea
+                    value={
+                      Array.isArray((content as any).valuePoints)
+                        ? (content as any).valuePoints.join("\n")
+                        : ""
+                    }
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        valuePoints: e.target.value.split("\n").map((l) => l.trim()).filter(Boolean),
+                      })
+                    }
+                    className={hpInput}
+                    rows={6}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">
+                    Trust points (one per line)
+                  </label>
+                  <textarea
+                    value={
+                      Array.isArray((content as any).trustPoints)
+                        ? (content as any).trustPoints.join("\n")
+                        : ""
+                    }
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        trustPoints: e.target.value.split("\n").map((l) => l.trim()).filter(Boolean),
+                      })
+                    }
+                    className={hpInput}
+                    rows={5}
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Headline HTML tag</label>
+                    <select
+                      value={(content as any).headlineTag === "h1" ? "h1" : "h2"}
+                      onChange={(e) =>
+                        setContent({
+                          ...content,
+                          headlineTag: e.target.value === "h1" ? "h1" : "h2",
+                        })
+                      }
+                      className={hpInput}
+                    >
+                      <option value="h2">h2 (recommended below hero)</option>
+                      <option value="h1">h1</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Text alignment</label>
+                    <select
+                      value={(content as any).contentAlignment === "center" ? "center" : "left"}
+                      onChange={(e) =>
+                        setContent({
+                          ...content,
+                          contentAlignment: e.target.value === "center" ? "center" : "left",
+                        })
+                      }
+                      className={hpInput}
+                    >
+                      <option value="left">Left</option>
+                      <option value="center">Center</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Image column</label>
+                    <select
+                      value={(content as any).visualPosition === "left" ? "left" : "right"}
+                      onChange={(e) =>
+                        setContent({
+                          ...content,
+                          visualPosition: e.target.value === "left" ? "left" : "right",
+                        })
+                      }
+                      className={hpInput}
+                    >
+                      <option value="right">Image on right</option>
+                      <option value="left">Image on left</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">Primary CTA</label>
+                  <div className="flex flex-col gap-2">
+                    <input
+                      type="text"
+                      value={(content as any).primaryCtaText || ""}
+                      onChange={(e) =>
+                        setContent({ ...content, primaryCtaText: e.target.value })
+                      }
+                      className={hpInput}
+                      placeholder="Label"
+                    />
+                    <input
+                      type="text"
+                      value={(content as any).primaryCtaLink || ""}
+                      onChange={(e) =>
+                        setContent({ ...content, primaryCtaLink: e.target.value })
+                      }
+                      className={hpInput}
+                      placeholder="/contact"
+                    />
+                  </div>
+                  <label className="flex items-center text-sm text-gray-700 mt-2">
+                    <input
+                      type="checkbox"
+                      checked={(content as any).primaryCtaVisible ?? true}
+                      onChange={(e) =>
+                        setContent({ ...content, primaryCtaVisible: e.target.checked })
+                      }
+                      className="mr-2"
+                    />
+                    Show primary CTA
+                  </label>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">Secondary CTA</label>
+                  <div className="flex flex-col gap-2">
+                    <input
+                      type="text"
+                      value={(content as any).secondaryCtaText || ""}
+                      onChange={(e) =>
+                        setContent({ ...content, secondaryCtaText: e.target.value })
+                      }
+                      className={hpInput}
+                    />
+                    <input
+                      type="text"
+                      value={(content as any).secondaryCtaLink || ""}
+                      onChange={(e) =>
+                        setContent({ ...content, secondaryCtaLink: e.target.value })
+                      }
+                      className={hpInput}
+                    />
+                  </div>
+                  <label className="flex items-center text-sm text-gray-700 mt-2">
+                    <input
+                      type="checkbox"
+                      checked={(content as any).secondaryCtaVisible ?? true}
+                      onChange={(e) =>
+                        setContent({ ...content, secondaryCtaVisible: e.target.checked })
+                      }
+                      className="mr-2"
+                    />
+                    Show secondary CTA
+                  </label>
+                </div>
+                <div>
+                  <ImagePicker
+                    value={(content as any).image || ""}
+                    onChange={(url) =>
+                      setContent({ ...content, image: url })
+                    }
+                    label="Section image (optional)"
+                    prefix="content-block"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">Image alt text</label>
+                  <input
+                    type="text"
+                    value={(content as any).imageAlt || ""}
+                    onChange={(e) =>
+                      setContent({ ...content, imageAlt: e.target.value })
+                    }
+                    className={hpInput}
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Accent</label>
+                    <input
+                      type="color"
+                      value={(content as any).accentColor || "#3b82f6"}
+                      onChange={(e) =>
+                        setContent({ ...content, accentColor: e.target.value })
+                      }
+                      className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Title color</label>
+                    <input
+                      type="color"
+                      value={(content as any).textColor || "#ffffff"}
+                      onChange={(e) =>
+                        setContent({ ...content, textColor: e.target.value })
+                      }
+                      className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Body color</label>
+                    <input
+                      type="color"
+                      value={(content as any).subTextColor || "#cbd5e1"}
+                      onChange={(e) =>
+                        setContent({ ...content, subTextColor: e.target.value })
+                      }
+                      className="h-10 w-14 rounded border border-gray-300 cursor-pointer"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">Badge text</label>
+                  <input
+                    type="text"
+                    value={(content as any).badgeText || ""}
+                    onChange={(e) =>
+                      setContent({ ...content, badgeText: e.target.value })
+                    }
+                    className={hpInput}
+                    placeholder="e.g. 40 Days"
+                  />
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={(content as any).showTimeline ?? false}
+                    onChange={(e) =>
+                      setContent({ ...content, showTimeline: e.target.checked })
+                    }
+                    className="mr-2"
+                  />
+                  <label className="text-gray-700">Show week timeline</label>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">
+                    Timeline labels (one per line, e.g. Week 1 … Week 6)
+                  </label>
+                  <textarea
+                    value={
+                      Array.isArray((content as any).timelineLabels)
+                        ? (content as any).timelineLabels.join("\n")
+                        : ""
+                    }
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        timelineLabels: e.target.value.split("\n").map((l) => l.trim()).filter(Boolean),
+                      })
+                    }
+                    className={hpInput}
+                    rows={3}
+                  />
+                </div>
+              </>
+            )}
           </div>
         )
+      }
       case "cards": {
         const cards: CardItem[] = Array.isArray((content as any).cards)
           ? (content as any).cards
@@ -1145,6 +1473,8 @@ export default function SectionEditor({
           <h3 className="text-lg font-semibold text-gray-900">
             {section.type === "hero"
               ? "Hero"
+              : section.type === "headingParagraph"
+                ? "Content block"
               : section.type === "projectLifeCycle"
               ? "Project Life Cycle"
               : section.type === "customPostType"

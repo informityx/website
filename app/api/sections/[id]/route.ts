@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db/prisma"
+import { parseSectionContent } from "@/lib/section-content-parse"
 import { z } from "zod"
 
 const sectionUpdateSchema = z.object({
@@ -9,37 +10,6 @@ const sectionUpdateSchema = z.object({
   content: z.any().optional(),
   isVisible: z.boolean().optional(),
 })
-
-const heroContentSchema = z.object({
-  backgroundColor: z.string().nullable().optional(),
-  paddingPercent: z.number().nullable().optional(),
-  eyebrow: z.string().optional(),
-  headline: z.string().optional(),
-  subheadline: z.string().optional(),
-  supportingLine: z.string().optional(),
-  headlineTag: z.enum(["h1", "h2"]).optional(),
-  contentAlignment: z.enum(["left", "center"]).optional(),
-  visualPosition: z.enum(["left", "right"]).optional(),
-  primaryCtaText: z.string().optional(),
-  primaryCtaLink: z.string().optional(),
-  primaryCtaVisible: z.boolean().optional(),
-  secondaryCtaText: z.string().optional(),
-  secondaryCtaLink: z.string().optional(),
-  secondaryCtaVisible: z.boolean().optional(),
-  heroImage: z.string().optional(),
-  heroImageAlt: z.string().optional(),
-  accentColor: z.string().optional(),
-  textColor: z.string().optional(),
-  subTextColor: z.string().optional(),
-})
-
-function parseSectionContent(type: string, content: unknown) {
-  const normalized = (content ?? {}) as object
-  if (type === "hero") {
-    return heroContentSchema.parse(normalized)
-  }
-  return normalized
-}
 
 export async function PUT(
   request: NextRequest,

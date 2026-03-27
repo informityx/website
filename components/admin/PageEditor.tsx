@@ -197,7 +197,7 @@ export default function PageEditor({ page, homePageId = null }: PageEditorProps)
           />
         </div>
 
-        <div className="border-t border-gray-200 pt-6 space-y-4 bg-gray-200 p-4 rounded-lg">
+        {/* <div className="border-t border-gray-200 pt-6 space-y-4 bg-gray-200 p-4 rounded-lg">
           <h2 className="text-lg font-semibold text-gray-900">Hero visual/background settings</h2>
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700">
@@ -356,7 +356,7 @@ export default function PageEditor({ page, homePageId = null }: PageEditorProps)
               prefix="page-banner-image"
             />
           </div>
-        </div>
+        </div> */}
 
         <div className="flex items-center">
           <input
@@ -439,7 +439,7 @@ export default function PageEditor({ page, homePageId = null }: PageEditorProps)
                 onClick={() => addSection("headingParagraph")}
                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
               >
-                Add Heading + Paragraph
+                Add Content Block
               </button>
               <button
                 onClick={() => addSection("cards")}

@@ -98,9 +98,17 @@ export interface SectionContent {
   images?: string[]
   autoplay?: boolean
 
-  // HeadingParagraph section
+  // HeadingParagraph / content block — simple (heading + paragraphs) or split (MVP USP, marketing); split uses `image` + `imageAlt`
+  layout?: "simple" | "split"
   heading?: string
   paragraphs?: string[]
+  body?: string
+  imageAlt?: string
+  valuePoints?: string[]
+  trustPoints?: string[]
+  badgeText?: string
+  showTimeline?: boolean
+  timelineLabels?: string[]
 
   // Cards section
   title?: string

@@ -31,7 +31,48 @@ export function getDefaultSectionContent(type: string): Record<string, unknown> 
     case "imageSlider":
       return { backgroundColor: null, paddingPercent: 5, images: [], autoplay: false }
     case "headingParagraph":
-      return { backgroundColor: null, paddingPercent: 5, heading: "", paragraphs: [""] }
+      return {
+        backgroundColor: null,
+        paddingPercent: 6,
+        layout: "split",
+        heading: "Launch Your Enterprise MVP in Just 40 Days",
+        paragraphs: [],
+        eyebrow: "High-Impact USP / Fast Delivery Section",
+        subheadline:
+          "Turn your idea into a fully functional, scalable product — built with the right architecture, clean code, and real-world usability from day one.",
+        body: "We combine speed with engineering excellence to deliver MVPs that are not just quick prototypes — but solid, production-ready foundations. From product strategy and UI/UX to backend systems and AI integration, our team ensures your product is built to launch fast and scale seamlessly.",
+        headlineTag: "h2",
+        contentAlignment: "left",
+        visualPosition: "right",
+        primaryCtaText: "Start Your MVP",
+        primaryCtaLink: "/contact",
+        primaryCtaVisible: true,
+        secondaryCtaText: "Discuss Your Idea",
+        secondaryCtaLink: "/contact",
+        secondaryCtaVisible: true,
+        image: "",
+        imageAlt: "Enterprise MVP delivery timeline and product development",
+        accentColor: "#3b82f6",
+        textColor: "#ffffff",
+        subTextColor: "#cbd5e1",
+        valuePoints: [
+          "Product Strategy & Technical Planning",
+          "High-End UI/UX Design",
+          "Scalable Backend Architecture (Node.js / Cloud-ready)",
+          "AI Integration (LLMs, Automation, Agents if required)",
+          "Fully Functional MVP (Launch-ready)",
+          "Deployment, Testing & Go-Live Support",
+        ],
+        trustPoints: [
+          "Built for scalability — not throwaway MVPs",
+          "Speed without compromising quality",
+          "Designed for real users, not just demos",
+          "Clear roadmap from MVP → Full Product",
+        ],
+        badgeText: "40 Days",
+        showTimeline: true,
+        timelineLabels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"],
+      }
     case "cards":
       return { backgroundColor: null, paddingPercent: 5, title: "", subText: "", cardsPerRow: 3, cards: [] }
     case "projectLifeCycle":

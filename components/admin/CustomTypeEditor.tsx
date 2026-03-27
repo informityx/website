@@ -388,7 +388,7 @@ export default function CustomTypeEditor({ customType }: CustomTypeEditorProps) 
                 onClick={() => addSection("headingParagraph")}
                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
               >
-                Add Heading + Paragraph
+                Add Content Block
               </button>
               <button
                 type="button"
