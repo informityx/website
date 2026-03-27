@@ -61,12 +61,14 @@ NEXT_PUBLIC_URL="http://localhost:3000"
 # Generate Prisma Client
 npm run db:generate
 
-# Push schema to database (for development)
+# Push schema to database (development only; quick sync without migration files)
 npm run db:push
 
-# Or run migrations (for production)
+# Or create / apply migrations (preferred when you use prisma/migrations)
 npm run db:migrate
 ```
+
+`npm run build` only runs `db:generate` and `next build`; Prisma does **not** open a database connection during that step, so the DB host does not need to be reachable from the build machine (unlike `db push` or `migrate deploy`). You should still define `DATABASE_URL` wherever the build runs if your tooling or Prisma expects it.
 
 4. Create an admin user:
 
@@ -157,10 +159,18 @@ Vercel Postgres is the recommended database: no external hosting, serverless-rea
 
 1. Push your code to GitHub
 2. Import your repository in Vercel
-3. Add **Vercel Postgres** (provides `DATABASE_URL` automatically)
-4. Set environment variables in the Vercel dashboard
-5. Run Prisma migrations as part of your build or via migration scripts
-6. Deploy
+3. Add your database (e.g. **Vercel Postgres** or [Prisma Postgres](https://www.prisma.io/postgres)) and set **`DATABASE_URL`** in the Vercel project **Environment Variables** (Production and Preview as needed)
+4. Set `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, and `NEXT_PUBLIC_URL` to your deployment URLs
+5. Deploy (the build runs `prisma generate` + `next build` only)
+6. **Apply the schema to the remote database** after the first deploy or whenever you add migrations — from your machine, with the same connection string Vercel uses:
+
+```bash
+DATABASE_URL="postgresql://..." npx prisma migrate deploy
+```
+
+Or: `npm run db:migrate:deploy` with `DATABASE_URL` in `.env` / `.env.local` pointed at production. For a throwaway dev database you can still use `npm run db:push` instead of migrations.
+
+Repeat step 6 whenever you ship new files under `prisma/migrations/`.
 
 Enable serverless functions and configure ISR revalidation as needed for dynamic pages.
 
