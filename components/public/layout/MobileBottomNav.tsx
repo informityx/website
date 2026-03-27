@@ -21,7 +21,7 @@ export default function MobileBottomNav({
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-brand-hover border-t border-white/10">
-      <div className="flex items-center overflow-x-auto gap-2">
+      <div className="flex items-center overflow-x-auto">
         {items.map((item) => {
           const isActive =
             item.href === "/"
