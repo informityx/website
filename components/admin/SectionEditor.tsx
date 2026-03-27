@@ -141,9 +141,10 @@ export default function SectionEditor({
                 <label className="block text-sm font-medium mb-2 text-gray-700">Headline tag</label>
                 <select
                   value={(content as any).headlineTag || "h1"}
-                  onChange={(e) =>
-                    setContent({ ...content, headlineTag: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const headlineTag = e.target.value as "h1" | "h2"
+                    setContent({ ...content, headlineTag })
+                  }}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="h1">H1</option>
@@ -154,9 +155,10 @@ export default function SectionEditor({
                 <label className="block text-sm font-medium mb-2 text-gray-700">Content alignment</label>
                 <select
                   value={(content as any).contentAlignment || "left"}
-                  onChange={(e) =>
-                    setContent({ ...content, contentAlignment: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const contentAlignment = e.target.value as "left" | "center"
+                    setContent({ ...content, contentAlignment })
+                  }}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="left">Left</option>
@@ -168,9 +170,10 @@ export default function SectionEditor({
               <label className="block text-sm font-medium mb-2 text-gray-700">Visual position</label>
               <select
                 value={(content as any).visualPosition || "right"}
-                onChange={(e) =>
-                  setContent({ ...content, visualPosition: e.target.value })
-                }
+                onChange={(e) => {
+                  const visualPosition = e.target.value as "left" | "right"
+                  setContent({ ...content, visualPosition })
+                }}
                 className="w-full max-w-[220px] px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="right">Right</option>
