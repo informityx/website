@@ -176,8 +176,8 @@ export default function FooterSettingsForm({
         <div className="flex-1 min-w-0 bg-white rounded-lg border border-gray-200 p-6 space-y-6">
           <h3 className="font-semibold text-gray-900">Social media links</h3>
           <p className="text-sm text-gray-600">
-            Optional links for the Social media footer column. Add URL and
-            optional display text for each.
+            Shown in this order: Facebook, Instagram, LinkedIn, X (Twitter), then
+            optional website. Add URL and optional label for each.
           </p>
           <div className="grid gap-4">
             <div>
@@ -244,37 +244,6 @@ export default function FooterSettingsForm({
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Twitter
-              </label>
-              <div className="flex gap-2 flex-wrap">
-                <input
-                  type="url"
-                  placeholder="URL"
-                  value={social.twitter?.url ?? ""}
-                  onChange={(e) =>
-                    setSocial({
-                      ...social,
-                      twitter: { ...social.twitter, url: e.target.value || undefined },
-                    })
-                  }
-                  className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                />
-                <input
-                  type="text"
-                  placeholder="Display text (optional)"
-                  value={social.twitter?.text ?? ""}
-                  onChange={(e) =>
-                    setSocial({
-                      ...social,
-                      twitter: { ...social.twitter, text: e.target.value || undefined },
-                    })
-                  }
-                  className="flex-1 min-w-[140px] px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
                 LinkedIn
               </label>
               <div className="flex gap-2 flex-wrap">
@@ -298,6 +267,37 @@ export default function FooterSettingsForm({
                     setSocial({
                       ...social,
                       linkedin: { ...social.linkedin, text: e.target.value || undefined },
+                    })
+                  }
+                  className="flex-1 min-w-[140px] px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                X (Twitter)
+              </label>
+              <div className="flex gap-2 flex-wrap">
+                <input
+                  type="url"
+                  placeholder="https://x.com/…"
+                  value={social.twitter?.url ?? ""}
+                  onChange={(e) =>
+                    setSocial({
+                      ...social,
+                      twitter: { ...social.twitter, url: e.target.value || undefined },
+                    })
+                  }
+                  className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                />
+                <input
+                  type="text"
+                  placeholder="Display text (optional, default: X)"
+                  value={social.twitter?.text ?? ""}
+                  onChange={(e) =>
+                    setSocial({
+                      ...social,
+                      twitter: { ...social.twitter, text: e.target.value || undefined },
                     })
                   }
                   className="flex-1 min-w-[140px] px-3 py-2 border border-gray-300 rounded-lg text-sm"

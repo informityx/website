@@ -9,7 +9,10 @@ export interface LifeCyclePhaseItem {
 
 export interface LifeCyclePhase {
   number: string
+  /** Step label shown in the card header (e.g. Discovery & Strategy). */
   title: string
+  /** Optional headline under the header bar (PDF “Title” line). */
+  tagline?: string
   description: string
   color: "blue" | "green" | "purple" | "orange" | "red" | "grey"
   icon: "document" | "chart" | "gear" | "cog" | "check" | "rocket" | "graduation" | "wrench"
@@ -215,18 +218,25 @@ export default function ProjectLifeCycleSection({ content }: ProjectLifeCycleSec
                   <span className="text-sm opacity-90">{phase.number}</span>
                 </div>
                 <div className="p-4 flex-1 flex flex-col">
+                  {phase.tagline ? (
+                    <p className="font-semibold text-gray-900 text-sm mb-2">{phase.tagline}</p>
+                  ) : null}
                   <p className="text-gray-600 text-sm mb-4">{phase.description}</p>
                   <div className="space-y-4 flex-1">
                     {phase.items.map((item, i) => (
                       <div key={i}>
-                        <h4 className="font-semibold text-gray-900 text-sm mb-2">
-                          {item.heading}
-                        </h4>
-                        <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
-                          {item.bullets.map((b, j) => (
-                            <li key={j}>{b}</li>
-                          ))}
-                        </ul>
+                        {item.heading ? (
+                          <h4 className="font-semibold text-gray-900 text-sm mb-2">
+                            {item.heading}
+                          </h4>
+                        ) : null}
+                        {item.bullets.length > 0 ? (
+                          <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
+                            {item.bullets.map((b, j) => (
+                              <li key={j}>{b}</li>
+                            ))}
+                          </ul>
+                        ) : null}
                       </div>
                     ))}
                   </div>

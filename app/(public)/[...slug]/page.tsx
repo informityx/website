@@ -8,6 +8,7 @@ import type { SectionData, PageData, CardItem } from "@/types/cms"
 import { canonicalFromSlug, getBaseUrl } from "@/lib/seo"
 import { getOrCreateSettings } from "@/lib/db/settings"
 import SeoJsonLd from "@/components/seo/SeoJsonLd"
+import { findCardInCptSections } from "@/lib/cpt-card-nav"
 
 const RESERVED_FIRST_SEGMENTS = ["services", "admin", "admin-login", "api", "media"]
 
@@ -16,22 +17,6 @@ interface DynamicPageProps {
 }
 
 export const revalidate = 60
-
-function findCardInSections(
-  sections: Array<{ type: string; content: unknown }>,
-  cardSlug: string
-): CardItem | null {
-  for (const section of sections) {
-    if (section.type !== "cards") continue
-    const content = section.content as { cards?: CardItem[] }
-    const cards = content?.cards ?? []
-    const card = cards.find(
-      (c) => (c.cardSlug ?? "").toLowerCase() === cardSlug.toLowerCase()
-    )
-    if (card) return card
-  }
-  return null
-}
 
 export async function generateMetadata({
   params,
@@ -55,7 +40,7 @@ export async function generateMetadata({
       },
     })
     if (customType) {
-      const card = findCardInSections(customType.sections, slug[1])
+      const card = findCardInCptSections(customType.sections, slug[1])
       if (card) {
         const title = `${card.heading} | ${customType.name}`
         const description = card.description || card.overview || undefined
@@ -247,7 +232,7 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
     })
 
     if (customType) {
-      const card = findCardInSections(customType.sections, slug[1])
+      const card = findCardInCptSections(customType.sections, slug[1])
       if (card) {
         return (
           <>

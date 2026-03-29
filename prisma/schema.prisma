@@ -89,6 +89,8 @@ model CustomType {
   name                   String    // Display label
   showInHeader           Boolean   @default(true)
   showInFooter           Boolean   @default(true)
+  /// When true, card items from this type’s cards sections appear in header/footer CPT dropdowns.
+  showCardsInNav         Boolean   @default(true)
   isPublished            Boolean   @default(false)
   order                  Int       @default(0)
   mobileMenuIcon        String?

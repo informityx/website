@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { SectionData, CardItem, CardServiceItem } from "@/types/cms"
 import ImagePicker from "./ImagePicker"
 import { slugify } from "@/lib/slugify"
+import { getDefaultSectionContent } from "@/lib/section-defaults"
 import type { LifeCyclePhase, LifeCyclePhaseItem } from "@/components/public/sections/ProjectLifeCycleSection"
 
 interface SectionEditorProps {
@@ -31,9 +32,18 @@ export default function SectionEditor({
   const [customTypeOptions, setCustomTypeOptions] = useState<CustomTypeOption[]>([])
 
   useEffect(() => {
-    setContent(section.content)
     setIsVisible(section.isVisible)
     setOrder(section.order)
+    if (section.type === "customPostType") {
+      const defaults = getDefaultSectionContent("customPostType") as Record<string, unknown>
+      const raw = (section.content || {}) as Record<string, unknown>
+      const merged = { ...defaults, ...raw }
+      const n = merged.itemsToShow
+      const itemsToShow = typeof n === "number" && n > 0 ? n : 3
+      setContent({ ...merged, itemsToShow })
+    } else {
+      setContent(section.content)
+    }
   }, [section])
 
   useEffect(() => {
@@ -63,11 +73,21 @@ export default function SectionEditor({
   const handleSave = async () => {
     setSaving(true)
     try {
+      const contentToSave =
+        section.type === "customPostType"
+          ? {
+              ...(content as Record<string, unknown>),
+              itemsToShow: (() => {
+                const n = (content as { itemsToShow?: unknown }).itemsToShow
+                return typeof n === "number" && n > 0 ? n : 3
+              })(),
+            }
+          : content
       const response = await fetch(`/api/sections/${section.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          content,
+          content: contentToSave,
           isVisible,
           order,
         }),
@@ -1129,6 +1149,7 @@ export default function SectionEditor({
               {
                 number: num,
                 title: "",
+                tagline: "",
                 description: "",
                 color: "blue",
                 icon: "gear",
@@ -1252,7 +1273,7 @@ export default function SectionEditor({
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium mb-1 text-gray-600">Title</label>
+                        <label className="block text-xs font-medium mb-1 text-gray-600">Title (header)</label>
                         <input
                           type="text"
                           value={phase.title}
@@ -1260,6 +1281,16 @@ export default function SectionEditor({
                           className={inputClass}
                         />
                       </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium mb-1 text-gray-600">Tagline (optional)</label>
+                      <input
+                        type="text"
+                        value={phase.tagline ?? ""}
+                        onChange={(e) => updatePhase(pIdx, { tagline: e.target.value })}
+                        className={inputClass}
+                        placeholder="Headline under the colored bar"
+                      />
                     </div>
                     <div>
                       <label className="block text-xs font-medium mb-1 text-gray-600">Description</label>
@@ -1378,13 +1409,13 @@ export default function SectionEditor({
             </div>
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700">
-                Number of items to show
+                Number of cards to display
               </label>
               <input
                 type="number"
                 min={1}
                 max={24}
-                value={(content as any).itemsToShow ?? 3}
+                value={(content as { itemsToShow?: number }).itemsToShow ?? 3}
                 onChange={(e) =>
                   setContent({
                     ...content,
@@ -1393,6 +1424,9 @@ export default function SectionEditor({
                 }
                 className="w-full max-w-[140px] px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                How many cards to show from the selected custom post type. Default is 3.
+              </p>
             </div>
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700">

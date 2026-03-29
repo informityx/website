@@ -28,7 +28,7 @@ export default function CTASection() {
           </h2>
           <p className="text-gray-600 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
             Let&apos;s have a discovery call to explore your requirements and see
-            how I can help bring your vision to life.
+            how we can help bring your vision to life.
           </p>
           <OpenContactModalButton className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-primary text-white font-semibold hover:bg-brand-hover transition-colors">
             <IconCalendar className="h-5 w-5 shrink-0" />

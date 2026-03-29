@@ -8,6 +8,7 @@ import { prisma } from "@/lib/db/prisma"
 import { getOrCreateSettings } from "@/lib/db/settings"
 import MobileBottomNav from "@/components/public/layout/MobileBottomNav"
 import type { MobileMenuIconKey } from "@/lib/mobileMenuIcons"
+import { getCardNavLinksFromSections } from "@/lib/cpt-card-nav"
 
 export default async function PublicLayout({
   children,
@@ -24,22 +25,34 @@ export default async function PublicLayout({
     prisma.customType.findMany({
       where: { isPublished: true },
       orderBy: [{ order: "asc" }, { updatedAt: "asc" }],
-      select: {
-        slug: true,
-        name: true,
-        showInHeader: true,
-        showInFooter: true,
-        mobileMenuIcon: true,
+      include: {
+        sections: {
+          where: { isVisible: true, type: "cards" },
+          orderBy: { order: "asc" },
+          select: { type: true, content: true },
+        },
       },
     }),
   ])
 
   const headerCustomTypes = customTypesForNav
     .filter((ct) => ct.showInHeader)
-    .map((ct) => ({ slug: ct.slug, name: ct.name }))
+    .map((ct) => ({
+      slug: ct.slug,
+      name: ct.name,
+      cardLinks: ct.showCardsInNav
+        ? getCardNavLinksFromSections(ct.slug, ct.sections)
+        : [],
+    }))
   const footerCustomTypes = customTypesForNav
     .filter((ct) => ct.showInFooter)
-    .map((ct) => ({ slug: ct.slug, name: ct.name }))
+    .map((ct) => ({
+      slug: ct.slug,
+      name: ct.name,
+      cardLinks: ct.showCardsInNav
+        ? getCardNavLinksFromSections(ct.slug, ct.sections)
+        : [],
+    }))
 
   const homePageId = settings.homePageId ?? null
   const navPages = publishedPages.map((p) => ({

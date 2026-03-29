@@ -21,6 +21,7 @@ export default function CustomTypeEditor({ customType }: CustomTypeEditorProps) 
     name: customType?.name || "",
     showInHeader: customType?.showInHeader ?? true,
     showInFooter: customType?.showInFooter ?? true,
+    showCardsInNav: customType?.showCardsInNav ?? true,
     isPublished: customType?.isPublished ?? false,
     order: customType?.order ?? 0,
     mobileMenuIcon: (customType?.mobileMenuIcon as MobileMenuIconKey | null) || "gear",
@@ -197,6 +198,16 @@ export default function CustomTypeEditor({ customType }: CustomTypeEditorProps) 
               onChange={(e) => setFormData({ ...formData, showInFooter: e.target.checked })}
             />
             <span className="text-gray-700">Show in footer menu</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={formData.showCardsInNav}
+              onChange={(e) =>
+                setFormData({ ...formData, showCardsInNav: e.target.checked })
+              }
+            />
+            <span className="text-gray-700">List cards in header/footer dropdown</span>
           </label>
           <label className="flex items-center gap-2">
             <input

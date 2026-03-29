@@ -76,109 +76,173 @@ export function getDefaultSectionContent(type: string): Record<string, unknown> 
     case "cards":
       return { backgroundColor: null, paddingPercent: 5, title: "", subText: "", cardsPerRow: 3, cards: [] }
     case "projectLifeCycle":
+      // Section 5 — How We Work (docs/inforMityx.ai.pdf)
       return {
         backgroundColor: "#f3f4f6",
         paddingPercent: 5,
-        title: "Project Delivery Life Cycle",
+        title: "From Idea to Scalable Product — Our Proven Process",
         description:
-          "A transparent, structured approach to bringing your ideas to life. Each phase ensures quality, communication, and successful project delivery from concept to completion.",
+          "A structured, transparent, and fast-moving approach that ensures your product is built right — from concept to launch and beyond.",
         hint: "Use arrow buttons, scroll horizontally, or drag to explore all phases.",
         phases: [
           {
             number: "01",
-            title: "Requirements Gathering",
-            description: "Initial discovery and planning with the client.",
+            title: "Discovery & Strategy",
+            tagline: "Understand Before We Build",
+            description:
+              "We align on your vision, define clear objectives, and identify the best technical approach to ensure your product solves the right problem.",
             color: "blue",
             icon: "document",
             items: [
-              { heading: "Client Meeting", bullets: ["Schedule call", "Discuss goals and expectations", "Identify primary features"] },
-              { heading: "Requirement Document", bullets: ["Write feature specs", "Organize by modules or flows", "Share document with client"] },
-              { heading: "Finalization", bullets: ["Confirm features", "Lock scope"] },
+              {
+                heading: "Key Focus",
+                bullets: [
+                  "Business goals & requirements",
+                  "Feature planning",
+                  "Technical feasibility",
+                  "Product roadmap",
+                ],
+              },
             ],
           },
           {
             number: "02",
-            title: "Estimation & Planning",
-            description: "Define timelines and delivery milestones.",
+            title: "Planning & Architecture",
+            tagline: "Designing for Scale from Day One",
+            description:
+              "We architect your system with scalability, performance, and flexibility in mind — ensuring your product grows without limitations.",
             color: "green",
             icon: "chart",
             items: [
-              { heading: "Time & Resource Estimates", bullets: ["Evaluate design/dev/test effort", "Define demo and delivery cycles"] },
-              { heading: "Sprint Planning", bullets: ["Divide tasks into bi-weekly sprints", "Assign internal resources"] },
-              { heading: "Timeline & Roadmap", bullets: ["Create shared timeline sheet", "Build internal Kanban/project tracker"] },
+              {
+                heading: "Key Focus",
+                bullets: [
+                  "System architecture design",
+                  "Tech stack selection",
+                  "Sprint planning",
+                  "Infrastructure planning",
+                ],
+              },
             ],
           },
           {
             number: "03",
-            title: "Prototyping (if needed)",
-            description: "Design skeleton UI or clickable prototype.",
+            title: "UI/UX & Prototyping",
+            tagline: "Design That Users Actually Love",
+            description:
+              "We create intuitive, user-centric designs that are not only visually appealing but also optimized for usability and engagement.",
             color: "purple",
             icon: "gear",
             items: [
-              { heading: "Wireframes", bullets: ["Sketch low-fidelity layout", "Present basic flow"] },
-              { heading: "Interactive Prototypes", bullets: ["Use Figma or similar tool", "Link flows and screens"] },
-              { heading: "Feedback & Approval", bullets: ["Present to client", "Revise based on input", "Lock final designs"] },
+              {
+                heading: "Key Focus",
+                bullets: [
+                  "Wireframes & user flows",
+                  "Interactive prototypes",
+                  "UX optimization",
+                  "Feedback iterations",
+                ],
+              },
             ],
           },
           {
             number: "04",
-            title: "Tech Setup & Development",
-            description: "Start coding and infrastructure setup.",
+            title: "Development",
+            tagline: "Building the Core Product",
+            description:
+              "Our engineering team builds your product using clean, scalable code — integrating APIs, AI systems, and robust backend infrastructure.",
             color: "orange",
             icon: "cog",
             items: [
-              { heading: "Project Initialization", bullets: ["Set up GitHub repo", "Configure CI/CD and servers"] },
-              { heading: "Bi-weekly Sync", bullets: ["Schedule regular progress demos", "Gather and apply feedback"] },
-              { heading: "Task Management", bullets: ["Track with internal board (e.g., Notion, Trello)", "Share updates with client"] },
+              {
+                heading: "Key Focus",
+                bullets: [
+                  "Frontend & backend development",
+                  "API integrations",
+                  "AI implementation",
+                  "DevOps & CI/CD",
+                ],
+              },
             ],
           },
           {
             number: "05",
-            title: "Testing & QA",
-            description: "Ensure product is bug-free and secure.",
-            color: "green",
+            title: "Testing & Optimization",
+            tagline: "Quality You Can Trust",
+            description:
+              "We rigorously test your product to ensure performance, security, and reliability before launch.",
+            color: "red",
             icon: "check",
             items: [
-              { heading: "Manual Testing", bullets: ["Check UX flows, responsiveness", "Cross-browser and device testing"] },
-              { heading: "Bug Fixes", bullets: ["Log and prioritize issues", "Patch critical blockers"] },
-              { heading: "Security Checks", bullets: ["Sanitize inputs", "SSL and auth layer verification"] },
-              { heading: "Final Walkthrough", bullets: [] },
+              {
+                heading: "Key Focus",
+                bullets: [
+                  "QA & bug fixing",
+                  "Performance optimization",
+                  "Security checks",
+                  "Cross-platform testing",
+                ],
+              },
             ],
           },
           {
             number: "06",
-            title: "Take the Product Live!",
-            description: "Launch the project to production.",
-            color: "red",
+            title: "Launch & Deployment",
+            tagline: "Go Live with Confidence",
+            description:
+              "We handle deployment, infrastructure setup, and launch execution — ensuring everything runs smoothly in production.",
+            color: "grey",
             icon: "rocket",
             items: [
-              { heading: "Deployment", bullets: ["Push to production (AWS, Vercel, etc.)", "Configure backups and monitoring"] },
-              { heading: "Domain & SSL", bullets: ["Setup custom domain", "Apply SSL certs and CDN"] },
-              { heading: "Launch Plan", bullets: ["Choose soft launch or full rollout", "Monitor performance in real-time"] },
+              {
+                heading: "Key Focus",
+                bullets: [
+                  "Cloud deployment (AWS/Vercel)",
+                  "Domain & SSL setup",
+                  "Monitoring systems",
+                  "Launch strategy",
+                ],
+              },
             ],
           },
           {
             number: "07",
-            title: "Handover / Client Training",
-            description: "Deliver project assets and training.",
+            title: "Handover & Training",
+            tagline: "Empowering Your Team",
+            description:
+              "We provide documentation, walkthroughs, and training so your team can confidently manage and scale the product.",
             color: "blue",
             icon: "graduation",
             items: [
-              { heading: "Access Delivery", bullets: ["Provide admin accounts", "Share hosting credentials"] },
-              { heading: "Documentation", bullets: ["User guides", "Codebase overview (if needed)"] },
-              { heading: "Training", bullets: ["Screen recordings", "Live walkthrough sessions"] },
+              {
+                heading: "Key Focus",
+                bullets: [
+                  "Documentation",
+                  "Admin access setup",
+                  "Training sessions",
+                  "Knowledge transfer",
+                ],
+              },
             ],
           },
           {
             number: "08",
-            title: "Post-Launch Support",
-            description: "Continued support and future planning.",
-            color: "grey",
+            title: "Growth & Support",
+            tagline: "Scale, Optimize, Evolve",
+            description:
+              "We continue to support and improve your product post-launch, helping you scale and adapt as your business grows.",
+            color: "green",
             icon: "wrench",
             items: [
-              { heading: "Maintenance", bullets: ["Bug fixes", "Platform updates"] },
-              { heading: "Feedback Collection", bullets: ["Monitor user input", "Prioritize suggestions"] },
-              { heading: "Future Roadmap", bullets: ["Define Phase 2", "Scope enhancements"] },
+              {
+                heading: "Key Focus",
+                bullets: [
+                  "Ongoing maintenance",
+                  "Feature enhancements",
+                  "Performance monitoring",
+                  "Future roadmap",
+                ],
+              },
             ],
           },
         ],

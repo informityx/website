@@ -15,7 +15,13 @@
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "cms:add-home-mvp": "tsx scripts/add-home-mvp-section.ts",
-    "cms:verify-home-mvp": "tsx scripts/verify-home-mvp-section.ts"
+    "cms:update-home-process": "tsx scripts/update-home-process-section.ts",
+    "cms:verify-home-mvp": "tsx scripts/verify-home-mvp-section.ts",
+    "cms:add-home-services-cpt": "tsx scripts/add-home-services-cpt.ts",
+    "cms:add-home-ai-capabilities-cpt": "tsx scripts/add-home-ai-capabilities-cpt.ts",
+    "cms:verify-home-services-cpt": "tsx scripts/verify-home-services-cpt.ts",
+    "db:url": "echo $DATABASE_URL",
+    "db:backup": "pg_dump $DATABASE_URL -Fc -b -v -f db/cms_$(date +%Y%m%d_%H%M%S).backup"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

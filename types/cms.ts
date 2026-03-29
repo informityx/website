@@ -120,6 +120,7 @@ export interface SectionContent {
   phases?: Array<{
     number: string
     title: string
+    tagline?: string
     description: string
     color: "blue" | "green" | "purple" | "orange" | "red" | "grey"
     icon: "document" | "chart" | "gear" | "cog" | "check" | "rocket" | "graduation" | "wrench"
@@ -156,6 +157,8 @@ export interface CustomTypeData {
   name: string
   showInHeader: boolean
   showInFooter: boolean
+  /** List each card under this CPT in header/footer nav dropdowns */
+  showCardsInNav: boolean
   isPublished: boolean
   order: number
   mobileMenuIcon?: string | null

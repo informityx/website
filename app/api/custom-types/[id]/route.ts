@@ -10,6 +10,7 @@ const customTypeUpdateSchema = z.object({
   name: z.string().min(1).optional(),
   showInHeader: z.boolean().optional(),
   showInFooter: z.boolean().optional(),
+  showCardsInNav: z.boolean().optional(),
   isPublished: z.boolean().optional(),
   order: z.number().optional(),
   mobileMenuIcon: z.string().optional().nullable(),
