@@ -1,6 +1,7 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState, type KeyboardEvent } from "react"
+import clsx from "clsx"
 
 export interface LifeCyclePhaseItem {
   heading: string
@@ -14,6 +15,9 @@ export interface LifeCyclePhase {
   /** Optional headline under the header bar (PDF “Title” line). */
   tagline?: string
   description: string
+  /** Cover image for the card front (below the title bar). */
+  image?: string
+  imageAlt?: string
   color: "blue" | "green" | "purple" | "orange" | "red" | "grey"
   icon: "document" | "chart" | "gear" | "cog" | "check" | "rocket" | "graduation" | "wrench"
   items: LifeCyclePhaseItem[]
@@ -126,11 +130,149 @@ function PhaseIcon({
   )
 }
 
+function PhaseDetailContent({ phase }: { phase: LifeCyclePhase }) {
+  return (
+    <>
+      {phase.tagline ? (
+        <p className="font-semibold text-gray-900 text-sm mb-2">{phase.tagline}</p>
+      ) : null}
+      <p className="text-gray-600 text-sm mb-4">{phase.description}</p>
+      <div className="space-y-4">
+        {phase.items.map((item, i) => (
+          <div key={i}>
+            {item.heading ? (
+              <h4 className="font-semibold text-gray-900 text-sm mb-2">{item.heading}</h4>
+            ) : null}
+            {item.bullets.length > 0 ? (
+              <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
+                {item.bullets.map((b, j) => (
+                  <li key={j}>{b}</li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
+
+function PhaseFlipCard({ phase, idx }: { phase: LifeCyclePhase; idx: number }) {
+  const [hoverFine, setHoverFine] = useState(true)
+  const [touchFlipped, setTouchFlipped] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)")
+    const sync = () => setHoverFine(mq.matches)
+    sync()
+    mq.addEventListener("change", sync)
+    return () => mq.removeEventListener("change", sync)
+  }, [])
+
+  const imgAlt =
+    phase.imageAlt?.trim() ||
+    `${phase.title} — ${phase.tagline || phase.description.slice(0, 48)}`
+
+  const handleFlipZoneClick = () => {
+    if (!hoverFine) setTouchFlipped((f) => !f)
+  }
+
+  const handleFlipZoneKeyDown = (e: KeyboardEvent) => {
+    if (hoverFine) return
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault()
+      setTouchFlipped((f) => !f)
+    }
+  }
+
+  const isFlipped = !hoverFine && touchFlipped
+
+  return (
+    <div className="flex-shrink-0 w-[320px] md:w-[360px] snap-start rounded-xl overflow-hidden bg-white shadow-md flex flex-col min-h-[400px]">
+      <div
+        className={`px-4 py-3 text-white flex items-center justify-between shrink-0 ${COLOR_CLASSES[phase.color] || "bg-gray-600"}`}
+      >
+        <span className="font-semibold text-lg leading-tight pr-2">{phase.title}</span>
+        <span className="text-sm opacity-90 shrink-0">{phase.number}</span>
+      </div>
+
+      <div
+        role="group"
+        tabIndex={0}
+        aria-label={
+          hoverFine
+            ? `${phase.title}: hover or focus to see details`
+            : `${phase.title}: tap to flip and see details`
+        }
+        onClick={!hoverFine ? handleFlipZoneClick : undefined}
+        onKeyDown={handleFlipZoneKeyDown}
+        className={clsx(
+          "relative flex-1 min-h-[300px] [perspective:1200px] outline-none group/card rounded-b-xl",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+          !hoverFine && "cursor-pointer"
+        )}
+      >
+        <div
+          className={clsx(
+            "absolute inset-0 transition-transform duration-500 ease-out [transform-style:preserve-3d]",
+            hoverFine &&
+              "group-hover/card:[transform:rotateY(180deg)] group-focus-visible/card:[transform:rotateY(180deg)]",
+            isFlipped && "[transform:rotateY(180deg)]"
+          )}
+        >
+          {/* Front — full-bleed image */}
+          <div className="absolute inset-0 bg-white [backface-visibility:hidden] overflow-hidden">
+            {phase.image ? (
+              <img
+                src={phase.image}
+                alt={imgAlt}
+                className="absolute inset-0 w-full h-full object-cover"
+                loading={idx < 2 ? "eager" : "lazy"}
+                draggable={false}
+              />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200">
+                <div
+                  className={clsx(
+                    "absolute inset-0 opacity-25",
+                    COLOR_CLASSES[phase.color] || "bg-gray-600"
+                  )}
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <svg
+                    className="w-28 h-28 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden
+                  >
+                    {ICON_SVG[phase.icon] || ICON_SVG.gear}
+                  </svg>
+                </div>
+              </div>
+            )}
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent pt-16 pb-3 px-3 pointer-events-none">
+              <p className="text-center text-xs font-medium text-white/95 tracking-wide">
+                {hoverFine ? "Hover to see details" : "Tap to flip"}
+              </p>
+            </div>
+          </div>
+
+          {/* Back — details (taps bubble to parent on touch to flip back) */}
+          <div className="absolute inset-0 bg-white [backface-visibility:hidden] [transform:rotateY(180deg)] overflow-y-auto overscroll-y-contain p-4 text-left">
+            <PhaseDetailContent phase={phase} />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function ProjectLifeCycleSection({ content }: ProjectLifeCycleSectionProps) {
   const {
     title = "Project Delivery Life Cycle",
     description = "A transparent, structured approach to bringing your ideas to life. Each phase ensures quality, communication, and successful project delivery from concept to completion.",
-    hint = "Use arrow buttons, scroll horizontally, or drag to explore all phases.",
+    hint = "Hover or focus a card to flip and read the full details. Scroll horizontally to see all phases.",
     phases = [],
   } = content
 
@@ -207,41 +349,7 @@ export default function ProjectLifeCycleSection({ content }: ProjectLifeCycleSec
             style={{ scrollbarWidth: "thin" }}
           >
             {phases.map((phase, idx) => (
-              <div
-                key={idx}
-                className="flex-shrink-0 w-[320px] md:w-[360px] snap-start rounded-xl overflow-hidden bg-white shadow-md flex flex-col"
-              >
-                <div
-                  className={`px-4 py-3 text-white flex items-center justify-between ${COLOR_CLASSES[phase.color] || "bg-gray-600"}`}
-                >
-                  <span className="font-semibold text-lg">{phase.title}</span>
-                  <span className="text-sm opacity-90">{phase.number}</span>
-                </div>
-                <div className="p-4 flex-1 flex flex-col">
-                  {phase.tagline ? (
-                    <p className="font-semibold text-gray-900 text-sm mb-2">{phase.tagline}</p>
-                  ) : null}
-                  <p className="text-gray-600 text-sm mb-4">{phase.description}</p>
-                  <div className="space-y-4 flex-1">
-                    {phase.items.map((item, i) => (
-                      <div key={i}>
-                        {item.heading ? (
-                          <h4 className="font-semibold text-gray-900 text-sm mb-2">
-                            {item.heading}
-                          </h4>
-                        ) : null}
-                        {item.bullets.length > 0 ? (
-                          <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
-                            {item.bullets.map((b, j) => (
-                              <li key={j}>{b}</li>
-                            ))}
-                          </ul>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <PhaseFlipCard key={idx} phase={phase} idx={idx} />
             ))}
           </div>
 

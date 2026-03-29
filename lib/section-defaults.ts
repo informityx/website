@@ -83,7 +83,7 @@ export function getDefaultSectionContent(type: string): Record<string, unknown> 
         title: "From Idea to Scalable Product — Our Proven Process",
         description:
           "A structured, transparent, and fast-moving approach that ensures your product is built right — from concept to launch and beyond.",
-        hint: "Use arrow buttons, scroll horizontally, or drag to explore all phases.",
+        hint: "Hover or focus a card to flip and read the full details. Scroll horizontally to see all phases.",
         phases: [
           {
             number: "01",

@@ -1151,6 +1151,8 @@ export default function SectionEditor({
                 title: "",
                 tagline: "",
                 description: "",
+                image: "",
+                imageAlt: "",
                 color: "blue",
                 icon: "gear",
                 items: [{ heading: "", bullets: [""] }],
@@ -1299,6 +1301,22 @@ export default function SectionEditor({
                         value={phase.description}
                         onChange={(e) => updatePhase(pIdx, { description: e.target.value })}
                         className={inputClass}
+                      />
+                    </div>
+                    <ImagePicker
+                      value={phase.image ?? ""}
+                      onChange={(url) => updatePhase(pIdx, { image: url })}
+                      label="Card cover image (front of flip)"
+                      prefix={`lifecycle-phase-${pIdx}`}
+                    />
+                    <div>
+                      <label className="block text-xs font-medium mb-1 text-gray-600">Cover image alt text</label>
+                      <input
+                        type="text"
+                        value={phase.imageAlt ?? ""}
+                        onChange={(e) => updatePhase(pIdx, { imageAlt: e.target.value })}
+                        className={inputClass}
+                        placeholder="Describe the image for accessibility"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-2">

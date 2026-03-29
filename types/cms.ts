@@ -122,6 +122,8 @@ export interface SectionContent {
     title: string
     tagline?: string
     description: string
+    image?: string
+    imageAlt?: string
     color: "blue" | "green" | "purple" | "orange" | "red" | "grey"
     icon: "document" | "chart" | "gear" | "cog" | "check" | "rocket" | "graduation" | "wrench"
     items: Array<{ heading: string; bullets: string[] }>
