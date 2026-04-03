@@ -4,6 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { CardItem } from "@/types/cms"
+import { cardUrlSegment } from "@/lib/cpt-card-nav"
 import CardDetailModal from "./CardDetailModal"
 
 interface CardsSectionProps {
@@ -13,7 +14,7 @@ interface CardsSectionProps {
     cardsPerRow?: number
     cards?: CardItem[]
   }
-  /** When set, cards with openInModal false and cardSlug render as links to /basePath/cardSlug */
+  /** When set, cards with openInModal false link to /basePath/{segment} (segment from slug or heading). */
   basePath?: string
 }
 
@@ -57,8 +58,9 @@ export default function CardsSection({ content, basePath }: CardsSectionProps) {
           {cards.length > 0 && (
             <div className={`grid grid-cols-1 ${gridCols} gap-6`}>
               {cards.map((card, index) => {
+                const segment = cardUrlSegment(card)
                 const openInNewPage =
-                  basePath && card.openInModal === false && card.cardSlug
+                  Boolean(basePath) && card.openInModal === false && Boolean(segment)
                 const cardContent = (
                   <>
                     {card.image && (
@@ -93,7 +95,7 @@ export default function CardsSection({ content, basePath }: CardsSectionProps) {
                   >
                     {openInNewPage ? (
                       <Link
-                        href={`/${basePath}/${card.cardSlug}`}
+                        href={`/${basePath}/${segment}`}
                         className="flex flex-col flex-1"
                       >
                         {cardContent}
@@ -123,6 +125,7 @@ export default function CardsSection({ content, basePath }: CardsSectionProps) {
           allCards={cards}
           currentIndex={selectedCardIndex}
           onNavigate={(index) => setSelectedCardIndex(index)}
+          basePath={basePath}
         />
       )}
     </section>

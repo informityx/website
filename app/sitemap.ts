@@ -2,6 +2,9 @@ import { MetadataRoute } from "next"
 import { prisma } from "@/lib/db/prisma"
 import { getOrCreateSettings } from "@/lib/db/settings"
 import { getBaseUrl } from "@/lib/seo"
+import { cardUrlSegment } from "@/lib/cpt-card-nav"
+import { hasMeaningfulHtml } from "@/lib/sanitize-html"
+import type { CardItem } from "@/types/cms"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getBaseUrl()
@@ -94,18 +97,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: 0.6,
     })
+    const cardUrlsSeen = new Set<string>()
     for (const section of ct.sections) {
-      const content = section.content as { cards?: Array<{ openInModal?: boolean; cardSlug?: string }> }
+      const content = section.content as { cards?: CardItem[] }
       const cards = content?.cards ?? []
       for (const card of cards) {
-        if (card.openInModal === false && card.cardSlug) {
-          customTypeEntries.push({
-            url: `${baseUrl}/${ct.slug}/${card.cardSlug}`,
-            lastModified: section.updatedAt,
-            changeFrequency: "weekly" as const,
-            priority: 0.5,
-          })
-        }
+        const segment = cardUrlSegment(card)
+        if (!segment) continue
+        const shouldList =
+          card.openInModal === false || hasMeaningfulHtml(card.detailHtml)
+        if (!shouldList) continue
+        const url = `${baseUrl}/${ct.slug}/${segment}`
+        if (cardUrlsSeen.has(url)) continue
+        cardUrlsSeen.add(url)
+        customTypeEntries.push({
+          url,
+          lastModified: section.updatedAt,
+          changeFrequency: "weekly" as const,
+          priority: 0.5,
+        })
       }
     }
   }

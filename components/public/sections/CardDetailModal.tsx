@@ -2,9 +2,12 @@
 
 import { CardItem, CardServiceItem } from "@/types/cms"
 import Image from "next/image"
+import Link from "next/link"
 import type { TouchEvent } from "react"
 import { useEffect, useMemo, useRef } from "react"
 import ModalShell from "@/components/public/ui/ModalShell"
+import { cardUrlSegment } from "@/lib/cpt-card-nav"
+import { hasMeaningfulHtml } from "@/lib/sanitize-html"
 
 interface CardDetailModalProps {
   card: CardItem
@@ -12,6 +15,8 @@ interface CardDetailModalProps {
   allCards?: CardItem[]
   currentIndex?: number
   onNavigate?: (index: number) => void
+  /** When set and card has detail HTML, show Read more → /basePath/segment */
+  basePath?: string
 }
 
 export default function CardDetailModal({
@@ -20,6 +25,7 @@ export default function CardDetailModal({
   allCards = [],
   currentIndex = 0,
   onNavigate,
+  basePath,
 }: CardDetailModalProps) {
   const canNavigate = Boolean(onNavigate) && allCards.length > 1
   const nextIndex = (currentIndex + 1) % allCards.length
@@ -65,6 +71,11 @@ export default function CardDetailModal({
     touchStartXRef.current = touch.clientX
     touchStartYRef.current = touch.clientY
   }
+
+  const readMoreHref =
+    basePath && hasMeaningfulHtml(card.detailHtml)
+      ? `/${basePath}/${cardUrlSegment(card)}`
+      : null
 
   const handleTouchEnd = (e: TouchEvent<HTMLDivElement>) => {
     if (!onNavigate || !canNavigate) return
@@ -178,6 +189,14 @@ export default function CardDetailModal({
             >
               View Source Code
             </a>
+          )}
+          {readMoreHref && (
+            <Link
+              href={readMoreHref}
+              className="inline-block px-4 py-2 rounded-xl border-2 border-brand-primary text-brand-primary font-medium hover:bg-brand-primary/5 transition"
+            >
+              Read more
+            </Link>
           )}
         </div>
       </div>

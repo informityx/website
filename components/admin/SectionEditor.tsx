@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { SectionData, CardItem, CardServiceItem } from "@/types/cms"
 import ImagePicker from "./ImagePicker"
+import RichTextEditor from "./RichTextEditor"
 import { slugify } from "@/lib/slugify"
 import { getDefaultSectionContent } from "@/lib/section-defaults"
 import type { LifeCyclePhase, LifeCyclePhaseItem } from "@/components/public/sections/ProjectLifeCycleSection"
@@ -939,6 +940,21 @@ export default function SectionEditor({
                         className={inputClass}
                         rows={2}
                       />
+                    </div>
+                    <div>
+                      <RichTextEditor
+                        label="Detailed content (full page only)"
+                        value={card.detailHtml || ""}
+                        onChange={(html) => {
+                          const next = [...cards]
+                          next[index] = { ...next[index], detailHtml: html }
+                          setContent({ ...content, cards: next })
+                        }}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Shown only on the card detail URL. If the cards block is on a custom type page, a
+                        &quot;Read more&quot; link appears in the modal when this has content.
+                      </p>
                     </div>
                     <div>
                       <label className="block text-xs font-medium mb-1 text-gray-600">

@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import type { CardItem, CardServiceItem } from "@/types/cms"
+import { hasMeaningfulHtml, sanitizeRichHtml } from "@/lib/sanitize-html"
 
 interface CardDetailPageProps {
   card: CardItem
@@ -23,6 +24,8 @@ export default function CardDetailPage({
   customTypeSlug,
 }: CardDetailPageProps) {
   const services = getServices(card)
+  const detailSafe =
+    hasMeaningfulHtml(card.detailHtml) ? sanitizeRichHtml(card.detailHtml!) : ""
 
   return (
     <>
@@ -75,6 +78,12 @@ export default function CardDetailPage({
               <p className="text-gray-700 whitespace-pre-line text-lg">{card.overview}</p>
             </div>
           )}
+          {detailSafe ? (
+            <div
+              className="prose max-w-none mb-8 text-gray-800 [&_img]:max-w-full [&_video]:max-w-full [&_iframe]:w-full [&_iframe]:max-w-full [&_iframe]:aspect-video"
+              dangerouslySetInnerHTML={{ __html: detailSafe }}
+            />
+          ) : null}
           {services.length > 0 && (
             <div className="mb-8">
               <h2 className="text-xl font-semibold text-brand-header mb-4">Services</h2>

@@ -9,6 +9,7 @@ import { canonicalFromSlug, getBaseUrl } from "@/lib/seo"
 import { getOrCreateSettings } from "@/lib/db/settings"
 import SeoJsonLd from "@/components/seo/SeoJsonLd"
 import { findCardInCptSections } from "@/lib/cpt-card-nav"
+import { cardMetaDescription } from "@/lib/card-meta"
 
 const RESERVED_FIRST_SEGMENTS = ["services", "admin", "admin-login", "api", "media"]
 
@@ -43,7 +44,7 @@ export async function generateMetadata({
       const card = findCardInCptSections(customType.sections, slug[1])
       if (card) {
         const title = `${card.heading} | ${customType.name}`
-        const description = card.description || card.overview || undefined
+        const description = cardMetaDescription(card)
         return {
           title,
           description,
@@ -239,7 +240,7 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
             <SeoJsonLd
               canonicalUrl={canonical}
               title={`${card.heading} | ${customType.name}`}
-              description={card.description || card.overview || undefined}
+              description={cardMetaDescription(card)}
               siteName={siteName}
               siteUrl={siteUrl}
               logoUrl={logoUrl}

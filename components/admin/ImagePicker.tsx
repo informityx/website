@@ -21,6 +21,12 @@ interface ImagePickerProps {
   label?: string
   accept?: string
   prefix?: string
+  /** When set, called with the URL after library pick, upload success, or other committed sources (not each URL keystroke). */
+  onUrlReady?: (url: string) => void
+  /** `blur`: only call onChange for the URL field when the field blurs (avoids per-keystroke parent updates). */
+  urlInputMode?: "live" | "blur"
+  /** z-index for the media library overlay (use higher when nested in another modal). */
+  overlayZIndex?: number
 }
 
 export default function ImagePicker({
@@ -29,7 +35,15 @@ export default function ImagePicker({
   label = "Image",
   accept = "image/*",
   prefix = "media",
+  onUrlReady,
+  urlInputMode = "live",
+  overlayZIndex = 50,
 }: ImagePickerProps) {
+  const [urlDraft, setUrlDraft] = useState(value)
+  useEffect(() => {
+    if (urlInputMode === "blur") setUrlDraft(value)
+  }, [value, urlInputMode])
+
   const [modalOpen, setModalOpen] = useState(false)
   const [blobs, setBlobs] = useState<StorageBlob[]>([])
   const [cursor, setCursor] = useState<string | null>(null)
@@ -77,6 +91,7 @@ export default function ImagePicker({
       if (!res.ok) throw new Error(data.error || "Upload failed")
       if (data.url) {
         onChange(data.url)
+        onUrlReady?.(data.url)
         setModalOpen(false)
         loadMedia()
       }
@@ -123,7 +138,10 @@ export default function ImagePicker({
                 const res = await fetch("/api/media", { method: "POST", body: fd })
                 const data = await res.json().catch(() => ({}))
                 if (!res.ok) throw new Error(data.error || "Upload failed")
-                if (data.url) onChange(data.url)
+                if (data.url) {
+                  onChange(data.url)
+                  onUrlReady?.(data.url)
+                }
               } catch (err) {
                 alert(err instanceof Error ? err.message : "Upload failed")
               } finally {
@@ -138,16 +156,25 @@ export default function ImagePicker({
       </div>
       <input
         type="url"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        value={urlInputMode === "blur" ? urlDraft : value}
+        onChange={(e) => {
+          if (urlInputMode === "blur") {
+            setUrlDraft(e.target.value)
+          } else {
+            onChange(e.target.value)
+          }
+        }}
+        onBlur={() => {
+          if (urlInputMode === "blur") onChange(urlDraft)
+        }}
         placeholder="Or paste image URL"
         className={inputClass}
       />
-      {value && (
+      {(urlInputMode === "blur" ? urlDraft : value) && (
         <div className="pt-2">
           <p className="text-xs font-medium text-gray-700 mb-1">Preview</p>
           <img
-            src={value}
+            src={urlInputMode === "blur" ? urlDraft : value}
             alt="Preview"
             className="h-20 w-auto max-w-[200px] object-contain border border-gray-200 rounded"
             onError={(e) => {
@@ -159,7 +186,8 @@ export default function ImagePicker({
 
       {modalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          className="fixed inset-0 flex items-center justify-center bg-black/50"
+          style={{ zIndex: overlayZIndex }}
           onClick={() => setModalOpen(false)}
         >
           <div
@@ -203,6 +231,7 @@ export default function ImagePicker({
                       type="button"
                       onClick={() => {
                         onChange(blob.url)
+                        onUrlReady?.(blob.url)
                         setModalOpen(false)
                       }}
                       className="aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-blue-500 focus:border-blue-500 focus:outline-none"

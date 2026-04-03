@@ -55,6 +55,8 @@ export interface CardItem {
   heading: string
   description?: string
   overview?: string
+  /** Rich HTML shown only on the card detail page (not in modal or grid). */
+  detailHtml?: string
   services?: CardServiceItem[]
   liveDemoUrl?: string
   sourceCodeUrl?: string
