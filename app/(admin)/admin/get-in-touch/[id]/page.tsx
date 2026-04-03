@@ -34,9 +34,13 @@ export default async function GetInTouchDetailPage({
         <div>
           <span className="text-sm font-medium text-gray-500">Email</span>
           <p className="text-gray-900">
-            <a href={`mailto:${sub.email}`} className="text-blue-600 hover:text-blue-800">
-              {sub.email}
-            </a>
+            {sub.email ? (
+              <a href={`mailto:${sub.email}`} className="text-blue-600 hover:text-blue-800">
+                {sub.email}
+              </a>
+            ) : (
+              <span className="text-gray-400">—</span>
+            )}
           </p>
         </div>
         {sub.phone && (

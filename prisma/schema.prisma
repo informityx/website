@@ -128,14 +128,14 @@ model Service {
 model GetInTouchSubmission {
   id          String   @id @default(cuid())
   fullName    String
-  email       String
+  email       String?
   phone       String?
   company     String?
-  inquiryType String
+  inquiryType String   @default("")
   budget      String?
   timeline    String?
   subject     String
-  message     String   @db.Text
+  message     String   @default("") @db.Text
   createdAt   DateTime @default(now())
 }
 

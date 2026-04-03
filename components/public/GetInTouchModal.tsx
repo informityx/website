@@ -2,6 +2,10 @@
 
 import { createContext, useContext, useState, type ReactNode } from "react"
 import toast from "react-hot-toast"
+import {
+  flattenZodFieldErrors,
+  getInTouchPayloadSchema,
+} from "@/lib/forms/getInTouchSchema"
 import ModalShell from "./ui/ModalShell"
 
 const IconEnvelope = ({ className }: { className?: string }) => (
@@ -95,28 +99,52 @@ export function GetInTouchModalProvider({ children }: { children: ReactNode }) {
   )
 }
 
+const inputOk =
+  "w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition"
+const inputErr =
+  "w-full px-4 py-2.5 rounded-xl border border-red-400 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-red-400 focus:border-red-400 outline-none transition"
+
 function GetInTouchModalContent({ onClose }: { onClose: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+
+  const inClass = (name: string) => (fieldErrors[name] ? inputErr : inputOk)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
+    setFieldErrors({})
     setIsSubmitting(true)
 
     const form = e.currentTarget
     const formData = new FormData(form)
 
-    const data = {
+    const raw = {
       fullName: formData.get("fullName")?.toString() ?? "",
       email: formData.get("email")?.toString() ?? "",
-      phone: formData.get("phone")?.toString() || null,
-      company: formData.get("company")?.toString() || null,
+      phone: formData.get("phone")?.toString() ?? "",
+      company: formData.get("company")?.toString() || undefined,
       inquiryType: formData.get("inquiryType")?.toString() ?? "",
       budget: formData.get("budget")?.toString() || null,
       timeline: formData.get("timeline")?.toString() || null,
       subject: formData.get("subject")?.toString() ?? "",
       message: formData.get("message")?.toString() ?? "",
+    }
+
+    const parsed = getInTouchPayloadSchema.safeParse(raw)
+    if (!parsed.success) {
+      setFieldErrors(flattenZodFieldErrors(parsed.error))
+      setIsSubmitting(false)
+      return
+    }
+
+    const data = {
+      ...parsed.data,
+      company: parsed.data.company ?? null,
+      budget: parsed.data.budget ?? null,
+      timeline: parsed.data.timeline ?? null,
+      phone: parsed.data.phone ?? null,
     }
 
     try {
@@ -131,6 +159,7 @@ function GetInTouchModalContent({ onClose }: { onClose: () => void }) {
         throw new Error(err.error ?? "Failed to submit")
       }
       toast.success("Message sent successfully! We'll be in touch soon.")
+      setFieldErrors({})
       onClose()
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong"
@@ -149,7 +178,7 @@ function GetInTouchModalContent({ onClose }: { onClose: () => void }) {
       </div>
       <p className="text-gray-500 text-sm mb-6">Let&apos;s discuss your project</p>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6" noValidate>
         {/* Personal Information */}
         <div>
           <div className="flex items-center gap-2 mb-4">
@@ -165,32 +194,56 @@ function GetInTouchModalContent({ onClose }: { onClose: () => void }) {
                 type="text"
                 name="fullName"
                 required
+                maxLength={120}
                 placeholder="Your full name"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition"
+                className={inClass("fullName")}
+                aria-invalid={!!fieldErrors.fullName}
               />
+              {fieldErrors.fullName && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.fullName}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address <span className="text-brand-primary">*</span>
+                Email
               </label>
               <input
                 type="email"
                 name="email"
-                required
+                maxLength={254}
                 placeholder="your.email@example.com"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition"
+                className={inClass("email")}
+                aria-invalid={!!fieldErrors.email}
               />
+              {fieldErrors.email ? (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
+              ) : (
+                <p className="mt-1 text-xs text-gray-500">
+                  Required unless you add a valid phone number (10–15 digits).
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone Number
+                Contact number
               </label>
               <input
                 type="tel"
                 name="phone"
+                inputMode="tel"
+                autoComplete="tel"
+                maxLength={40}
                 placeholder="+1 (555) 123-4567"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition"
+                className={inClass("phone")}
+                aria-invalid={!!fieldErrors.phone}
               />
+              {fieldErrors.phone ? (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.phone}</p>
+              ) : (
+                <p className="mt-1 text-xs text-gray-500">
+                  Required if no email. Digits only count toward 10–15 length.
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -199,9 +252,13 @@ function GetInTouchModalContent({ onClose }: { onClose: () => void }) {
               <input
                 type="text"
                 name="company"
+                maxLength={200}
                 placeholder="Your company name"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition"
+                className={inClass("company")}
               />
+              {fieldErrors.company && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.company}</p>
+              )}
             </div>
           </div>
         </div>
@@ -262,15 +319,18 @@ function GetInTouchModalContent({ onClose }: { onClose: () => void }) {
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Subject <span className="text-brand-primary">*</span>
+                Subject
               </label>
               <input
                 type="text"
                 name="subject"
-                required
-                placeholder="Brief subject of your inquiry"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition"
+                maxLength={200}
+                placeholder="Brief subject (optional)"
+                className={inClass("subject")}
               />
+              {fieldErrors.subject && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.subject}</p>
+              )}
             </div>
           </div>
         </div>
@@ -283,15 +343,18 @@ function GetInTouchModalContent({ onClose }: { onClose: () => void }) {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Message <span className="text-brand-primary">*</span>
+              Message
             </label>
             <textarea
               name="message"
-              required
               rows={5}
-              placeholder="Please describe your project, goals, requirements, or any specific questions you have. The more details you provide, the better I can assist you."
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition resize-y"
+              maxLength={5000}
+              placeholder="Describe your project (optional)"
+              className={`${inClass("message")} resize-y`}
             />
+            {fieldErrors.message && (
+              <p className="mt-1 text-sm text-red-600">{fieldErrors.message}</p>
+            )}
           </div>
         </div>
 

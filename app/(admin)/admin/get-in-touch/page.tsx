@@ -43,9 +43,13 @@ export default async function GetInTouchPage() {
               <tr key={sub.id}>
                 <td className="px-6 py-4 whitespace-nowrap text-gray-900">{sub.fullName}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <a href={`mailto:${sub.email}`} className="text-blue-600 hover:text-blue-800">
-                    {sub.email}
-                  </a>
+                  {sub.email ? (
+                    <a href={`mailto:${sub.email}`} className="text-blue-600 hover:text-blue-800">
+                      {sub.email}
+                    </a>
+                  ) : (
+                    <span className="text-gray-400">—</span>
+                  )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-gray-500">{sub.company ?? "—"}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-gray-500">{sub.inquiryType}</td>
