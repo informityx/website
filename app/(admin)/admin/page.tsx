@@ -10,7 +10,7 @@ export default async function AdminDashboard() {
 
   const stats = [
     { label: "Total Pages", value: pagesCount, href: "/admin/pages" },
-    { label: "Custom types", value: customTypesCount, href: "/admin/custom-types" },
+    { label: "Custom types", value: customTypesCount, href: "/admin/pages#custom-types" },
     { label: "Total Sections", value: sectionsCount, href: "/admin/sections" },
   ]
 
