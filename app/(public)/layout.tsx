@@ -126,7 +126,7 @@ export default async function PublicLayout({
             navPages={navPages}
             customTypesInHeader={headerCustomTypes}
           />
-          <main className="flex-grow pt-12 lg:pt-10">
+          <main className="flex-grow pt-16 md:pt-20">
             {children}
             <CTASection />
           </main>

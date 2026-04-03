@@ -16,6 +16,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "cms:add-home-mvp": "tsx scripts/add-home-mvp-section.ts",
     "cms:update-home-process": "tsx scripts/update-home-process-section.ts",
+    "cms:add-home-why-choose": "tsx scripts/add-home-why-choose-cards.ts",
+    "cms:add-home-staff-augmentation": "tsx scripts/add-home-staff-augmentation-sections.ts",
     "cms:verify-home-mvp": "tsx scripts/verify-home-mvp-section.ts",
     "cms:add-home-services-cpt": "tsx scripts/add-home-services-cpt.ts",
     "cms:add-home-ai-capabilities-cpt": "tsx scripts/add-home-ai-capabilities-cpt.ts",
