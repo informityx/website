@@ -15,7 +15,13 @@ const navItems = [
   { href: "/admin/settings", label: "Settings", icon: "⚙️" },
 ]
 
-export default function Sidebar() {
+export type CardDeskNavItem = { id: string; name: string }
+
+export default function Sidebar({
+  cardDeskTypes = [],
+}: {
+  cardDeskTypes?: CardDeskNavItem[]
+}) {
   const pathname = usePathname()
 
   return (
@@ -28,7 +34,10 @@ export default function Sidebar() {
           const isActive =
             item.href === "/admin/pages"
               ? pathname.startsWith("/admin/pages") ||
-                pathname.startsWith("/admin/custom-types")
+                (pathname.startsWith("/admin/custom-types") &&
+                  !cardDeskTypes.some((ct) =>
+                    pathname.startsWith(`/admin/custom-types/${ct.id}/cards`)
+                  ))
               : pathname === item.href
           return (
             <Link
@@ -46,6 +55,32 @@ export default function Sidebar() {
             </Link>
           )
         })}
+        {cardDeskTypes.length > 0 && (
+          <div className="pt-4 mt-4 border-t border-gray-700 space-y-1">
+            <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Card desk
+            </p>
+            {cardDeskTypes.map((ct) => {
+              const href = `/admin/custom-types/${ct.id}/cards`
+              const isActive = pathname.startsWith(href)
+              return (
+                <Link
+                  key={ct.id}
+                  href={href}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3 rounded-lg transition",
+                    isActive
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                  )}
+                >
+                  <span>📇</span>
+                  <span className="truncate">{ct.name}</span>
+                </Link>
+              )
+            })}
+          </div>
+        )}
       </nav>
       <div className="mt-8 pt-8 border-t border-gray-700">
         <button

@@ -11,6 +11,8 @@ const customTypeUpdateSchema = z.object({
   showInHeader: z.boolean().optional(),
   showInFooter: z.boolean().optional(),
   showCardsInNav: z.boolean().optional(),
+  showCardDeskInNav: z.boolean().optional(),
+  cardDeskSectionId: z.string().min(1).optional().nullable(),
   isPublished: z.boolean().optional(),
   order: z.number().optional(),
   mobileMenuIcon: z.string().optional().nullable(),
@@ -83,6 +85,22 @@ export async function PUT(
       if (existing) {
         return NextResponse.json(
           { error: "A custom type with this slug already exists." },
+          { status: 400 }
+        )
+      }
+    }
+
+    if (data.cardDeskSectionId !== undefined && data.cardDeskSectionId !== null) {
+      const section = await prisma.section.findFirst({
+        where: {
+          id: data.cardDeskSectionId,
+          customTypeId: id,
+          type: "cards",
+        },
+      })
+      if (!section) {
+        return NextResponse.json(
+          { error: "Card desk section must be a cards section belonging to this custom type." },
           { status: 400 }
         )
       }

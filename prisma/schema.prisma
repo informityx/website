@@ -71,6 +71,8 @@ model Section {
   page          Page?       @relation(fields: [pageId], references: [id], onDelete: Cascade)
   customTypeId  String?
   customType    CustomType? @relation(fields: [customTypeId], references: [id], onDelete: Cascade)
+  /// When set, this section is the card-desk list for the linked custom type (see CustomType.cardDeskSectionId).
+  cardDeskForCustomType CustomType? @relation("CardDeskSection")
   type          String      // "textImage", "imageSlider", "headingParagraph", etc.
   order         Int         @default(0)
   content       Json        // Flexible JSON for section-specific data
@@ -104,6 +106,11 @@ model CustomType {
   bannerButtonVisible    Boolean?
   bannerImage            String?
   bannerHeightPercent    Int?      // 0-100, viewport height %
+  /// When true, show this CPT in admin sidebar linking to the card desk (simplified card CRUD).
+  showCardDeskInNav      Boolean   @default(false)
+  /// Optional: which `cards` section holds the desk list; null = first cards section by order.
+  cardDeskSectionId      String?   @unique
+  cardDeskSection        Section?  @relation("CardDeskSection", fields: [cardDeskSectionId], references: [id], onDelete: SetNull)
   sections               Section[]
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt

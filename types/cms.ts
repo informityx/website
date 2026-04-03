@@ -51,6 +51,8 @@ export interface CardServiceItem {
 }
 
 export interface CardItem {
+  /** Stable id for card-desk URLs and edits (optional for legacy data). */
+  id?: string
   image?: string
   heading: string
   description?: string
@@ -163,6 +165,8 @@ export interface CustomTypeData {
   showInFooter: boolean
   /** List each card under this CPT in header/footer nav dropdowns */
   showCardsInNav: boolean
+  showCardDeskInNav?: boolean
+  cardDeskSectionId?: string | null
   isPublished: boolean
   order: number
   mobileMenuIcon?: string | null

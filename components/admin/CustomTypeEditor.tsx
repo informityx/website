@@ -1,13 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { CustomTypeData, SectionData } from "@/types/cms"
 import SectionEditor from "./SectionEditor"
 import ImagePicker from "./ImagePicker"
 import { getDefaultSectionContent } from "@/lib/section-defaults"
 import { slugify } from "@/lib/slugify"
 import { MOBILE_MENU_ICON_OPTIONS, type MobileMenuIconKey } from "@/lib/mobileMenuIcons"
+import { resolveCardDeskSection } from "@/lib/card-desk"
 
 interface CustomTypeEditorProps {
   customType?: CustomTypeData
@@ -22,6 +24,8 @@ export default function CustomTypeEditor({ customType }: CustomTypeEditorProps) 
     showInHeader: customType?.showInHeader ?? true,
     showInFooter: customType?.showInFooter ?? true,
     showCardsInNav: customType?.showCardsInNav ?? true,
+    showCardDeskInNav: customType?.showCardDeskInNav ?? false,
+    cardDeskSectionId: customType?.cardDeskSectionId ?? "",
     isPublished: customType?.isPublished ?? false,
     order: customType?.order ?? 0,
     mobileMenuIcon: (customType?.mobileMenuIcon as MobileMenuIconKey | null) || "gear",
@@ -72,6 +76,7 @@ export default function CustomTypeEditor({ customType }: CustomTypeEditorProps) 
       const method = customType ? "PUT" : "POST"
       const payload = {
         ...formData,
+        cardDeskSectionId: formData.cardDeskSectionId.trim() || null,
         mobileMenuIcon: formData.mobileMenuIcon || null,
         bannerBackgroundImage: formData.bannerBackgroundImage || null,
         bannerOverlayColor: formData.bannerOverlayColor || null,
@@ -153,6 +158,28 @@ export default function CustomTypeEditor({ customType }: CustomTypeEditorProps) 
     setSections(sections.map((s) => (s.id === updatedSection.id ? updatedSection : s)))
   }
 
+  const cardSections = useMemo(
+    () => sections.filter((s) => s.type === "cards"),
+    [sections]
+  )
+
+  const resolvedCardDeskSection = useMemo(() => {
+    if (!customType) return null
+    return resolveCardDeskSection(
+      {
+        id: customType.id,
+        cardDeskSectionId: formData.cardDeskSectionId.trim() || null,
+      },
+      sections.map((s) => ({
+        id: s.id,
+        customTypeId: s.customTypeId ?? customType.id,
+        type: s.type,
+        order: s.order,
+        content: s.content,
+      }))
+    )
+  }, [customType, formData.cardDeskSectionId, sections])
+
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-8 text-gray-900">
@@ -212,6 +239,16 @@ export default function CustomTypeEditor({ customType }: CustomTypeEditorProps) 
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
+              checked={formData.showCardDeskInNav}
+              onChange={(e) =>
+                setFormData({ ...formData, showCardDeskInNav: e.target.checked })
+              }
+            />
+            <span className="text-gray-700">Show card desk in admin sidebar</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
               checked={formData.isPublished}
               onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
             />
@@ -228,6 +265,42 @@ export default function CustomTypeEditor({ customType }: CustomTypeEditorProps) 
             />
           </div>
         </div>
+
+        {customType && cardSections.length > 0 && (
+          <div className="mt-4">
+            <label className="block text-sm font-medium mb-2 text-gray-700">
+              Card list section (for card desk)
+            </label>
+            <select
+              value={formData.cardDeskSectionId}
+              onChange={(e) =>
+                setFormData({ ...formData, cardDeskSectionId: e.target.value })
+              }
+              className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">First cards section (by order)</option>
+              {cardSections.map((s) => (
+                <option key={s.id} value={s.id}>
+                  Cards — order {s.order}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              When multiple Cards blocks exist, choose which one the card desk edits.
+            </p>
+          </div>
+        )}
+
+        {customType && formData.showCardDeskInNav && resolvedCardDeskSection && (
+          <div className="mt-2">
+            <Link
+              href={`/admin/custom-types/${customType.id}/cards`}
+              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            >
+              Open card desk
+            </Link>
+          </div>
+        )}
 
         <div className="mt-4">
           <label className="block text-sm font-medium mb-2 text-gray-700">
