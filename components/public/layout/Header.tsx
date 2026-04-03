@@ -1,6 +1,7 @@
 import Link from "next/link"
 import OpenContactModalButton from "@/components/public/OpenContactModalButton"
 import OpenClientOnboardingModalButton from "@/components/public/OpenClientOnboardingModalButton"
+import MobileFullScreenNav from "@/components/public/MobileFullScreenNav"
 import { List, Workflow } from "lucide-react"
 
 export interface NavPage {
@@ -86,28 +87,32 @@ export default function Header({
   navPages,
   customTypesInHeader = [],
 }: HeaderProps) {
-  const linkClassMobile = "text-brand-primary font-semibold text-sm hover:text-brand-hover"
-
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white">
       <div className="container mx-auto px-4 py-4">
-        <nav className="flex flex-col gap-3">
+        <nav className="flex flex-col">
           <div className="flex items-center justify-between gap-2">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-2xl font-bold text-white hover:text-brand-hover transition-colors shrink-0"
-            >
-              {brand.type === "logo" ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={brand.logoUrl}
-                  alt="Logo"
-                  className="lg:h-12 h-9 w-auto max-w-[450px] object-contain"
-                />
-              ) : (
-                brand.text
-              )}
-            </Link>
+            <div className="flex items-center gap-1 min-w-0 shrink">
+              <MobileFullScreenNav
+                navPages={navPages}
+                customTypesInHeader={customTypesInHeader}
+              />
+              <Link
+                href="/"
+                className="flex items-center gap-2 text-2xl font-bold text-white hover:text-brand-hover transition-colors min-w-0"
+              >
+                {brand.type === "logo" ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={brand.logoUrl}
+                    alt="Logo"
+                    className="lg:h-12 h-9 w-auto max-w-[min(450px,70vw)] object-contain object-left"
+                  />
+                ) : (
+                  brand.text
+                )}
+              </Link>
+            </div>
             <div className="hidden md:flex gap-6 justify-center flex-1 items-center">
               {navPages.map((page) => (
                 <Link
@@ -133,47 +138,6 @@ export default function Header({
               </OpenClientOnboardingModalButton>
             </div>
           </div>
-
-          <details className="md:hidden border-t border-gray-100 pt-3 [&_summary::-webkit-details-marker]:hidden">
-            <summary className="cursor-pointer list-none text-brand-primary font-semibold text-sm flex items-center gap-1">
-              Site menu
-              <span className="text-xs opacity-70" aria-hidden>
-                ▾
-              </span>
-            </summary>
-            <div className="mt-3 flex flex-col gap-3 border-l-2 border-brand-primary/30 pl-3">
-              {navPages.map((page) => (
-                <Link
-                  key={page.id}
-                  href={page.isHome ? "/" : `/${page.slug}`}
-                  className={linkClassMobile}
-                >
-                  {page.title}
-                </Link>
-              ))}
-              {customTypesInHeader.map((ct) => (
-                <div key={ct.slug} className="flex flex-col gap-1.5">
-                  <Link href={`/${ct.slug}`} className={linkClassMobile}>
-                    {ct.name}
-                  </Link>
-                  {ct.cardLinks.length > 0 && (
-                    <ul className="ml-2 flex flex-col gap-1 border-l border-gray-200 pl-2">
-                      {ct.cardLinks.map((link) => (
-                        <li key={link.href}>
-                          <Link
-                            href={link.href}
-                            className="text-xs text-gray-700 hover:text-brand-primary"
-                          >
-                            {link.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </div>
-          </details>
         </nav>
       </div>
     </header>

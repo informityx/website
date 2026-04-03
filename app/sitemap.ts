@@ -6,6 +6,9 @@ import { cardUrlSegment } from "@/lib/cpt-card-nav"
 import { hasMeaningfulHtml } from "@/lib/sanitize-html"
 import type { CardItem } from "@/types/cms"
 
+// Build environments (CI, Vercel) often have no DB; generate sitemap at request time instead.
+export const dynamic = "force-dynamic"
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getBaseUrl()
 

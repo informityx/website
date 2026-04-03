@@ -108,6 +108,13 @@ export default async function PublicLayout({
     isHome: p.id === homePageId,
   }))
 
+  const footerContact = footerSettings.footerContactJson
+  const footerPhoneRaw =
+    footerContact?.phone1?.trim() || footerContact?.phone2?.trim() || ""
+  const mobileBottomNavCallHref = footerPhoneRaw
+    ? `tel:${footerPhoneRaw.replace(/\s/g, "")}`
+    : null
+
   const headerBrand =
     settings.headerBrandType === "logo" && settings.headerLogoUrl
       ? { type: "logo" as const, logoUrl: settings.headerLogoUrl }
@@ -120,7 +127,7 @@ export default async function PublicLayout({
     <GetInTouchModalProvider>
       <ClientOnboardingModalProvider>
         <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
-        <div className="public-site flex flex-col min-h-screen pb-20 md:pb-0">
+        <div className="public-site flex flex-col min-h-screen pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
           <Header
             brand={headerBrand}
             navPages={navPages}
@@ -135,7 +142,7 @@ export default async function PublicLayout({
             menuPages={footerNavPages}
             customTypesInFooter={footerCustomTypes}
           />
-          <MobileBottomNav items={mobileNavItems} />
+          <MobileBottomNav items={mobileNavItems} callHref={mobileBottomNavCallHref} />
         </div>
       </ClientOnboardingModalProvider>
     </GetInTouchModalProvider>
