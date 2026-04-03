@@ -10,6 +10,12 @@ import { getOrCreateSettings } from "@/lib/db/settings"
 import SeoJsonLd from "@/components/seo/SeoJsonLd"
 import { findCardInCptSections } from "@/lib/cpt-card-nav"
 import { cardMetaDescription } from "@/lib/card-meta"
+import {
+  openGraphAndTwitterImages,
+  resolveBannerAndSectionOgImage,
+  toAbsoluteOgImageUrl,
+  firstImageFromVisibleSections,
+} from "@/lib/og-image"
 
 const RESERVED_FIRST_SEGMENTS = ["services", "admin", "admin-login", "api", "media"]
 
@@ -45,6 +51,14 @@ export async function generateMetadata({
       if (card) {
         const title = `${card.heading} | ${customType.name}`
         const description = cardMetaDescription(card)
+        const rawOg =
+          card.image?.trim() ||
+          customType.bannerImage?.trim() ||
+          firstImageFromVisibleSections(customType.sections) ||
+          customType.bannerBackgroundImage?.trim()
+        const ogAbs = toAbsoluteOgImageUrl(rawOg)
+        const { openGraphImages, twitterCard, twitterImages } =
+          openGraphAndTwitterImages(ogAbs, card.heading)
         return {
           title,
           description,
@@ -54,11 +68,13 @@ export async function generateMetadata({
             url: canonical,
             title,
             description,
+            ...(openGraphImages ? { images: openGraphImages } : {}),
           },
           twitter: {
-            card: "summary",
+            card: twitterCard,
             title,
             description,
+            ...(twitterImages ? { images: twitterImages } : {}),
           },
         }
       }
@@ -67,11 +83,24 @@ export async function generateMetadata({
 
   const page = await prisma.page.findUnique({
     where: { slug: slugString },
+    include: {
+      sections: {
+        where: { isVisible: true },
+        orderBy: { order: "asc" },
+      },
+    },
   })
 
   if (page?.isPublished) {
     const title = page.metaTitle || page.title
     const description = page.metaDescription || undefined
+    const ogAbs = resolveBannerAndSectionOgImage(
+      page.bannerImage,
+      page.bannerBackgroundImage,
+      page.sections
+    )
+    const { openGraphImages, twitterCard, twitterImages } =
+      openGraphAndTwitterImages(ogAbs, title)
     return {
       title,
       description,
@@ -81,11 +110,13 @@ export async function generateMetadata({
         url: canonical,
         title,
         description,
+        ...(openGraphImages ? { images: openGraphImages } : {}),
       },
       twitter: {
-        card: "summary",
+        card: twitterCard,
         title,
         description,
+        ...(twitterImages ? { images: twitterImages } : {}),
       },
     }
   }
@@ -93,10 +124,23 @@ export async function generateMetadata({
   if (slug.length === 1 && !RESERVED_FIRST_SEGMENTS.includes(slug[0])) {
     const customType = await prisma.customType.findUnique({
       where: { slug: slug[0], isPublished: true },
+      include: {
+        sections: {
+          where: { isVisible: true },
+          orderBy: { order: "asc" },
+        },
+      },
     })
     if (customType) {
       const title = customType.name
       const description = customType.bannerText || customType.bannerTitle || undefined
+      const ogAbs = resolveBannerAndSectionOgImage(
+        customType.bannerImage,
+        customType.bannerBackgroundImage,
+        customType.sections
+      )
+      const { openGraphImages, twitterCard, twitterImages } =
+        openGraphAndTwitterImages(ogAbs, title)
       return {
         title,
         description,
@@ -106,11 +150,13 @@ export async function generateMetadata({
           url: canonical,
           title,
           description,
+          ...(openGraphImages ? { images: openGraphImages } : {}),
         },
         twitter: {
-          card: "summary",
+          card: twitterCard,
           title,
           description,
+          ...(twitterImages ? { images: twitterImages } : {}),
         },
       }
     }

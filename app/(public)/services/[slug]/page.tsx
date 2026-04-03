@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db/prisma"
 import Image from "next/image"
 import type { Metadata } from "next"
 import { canonicalUrl, getBaseUrl } from "@/lib/seo"
+import { openGraphAndTwitterImages, toAbsoluteOgImageUrl } from "@/lib/og-image"
 import { getOrCreateSettings } from "@/lib/db/settings"
 import SeoJsonLd from "@/components/seo/SeoJsonLd"
 
@@ -30,6 +31,9 @@ export async function generateMetadata({
   const canonical = canonicalUrl(`/services/${service.slug}`)
   const title = service.title
   const description = service.description || service.shortDescription || undefined
+  const ogAbs = toAbsoluteOgImageUrl(service.image)
+  const { openGraphImages, twitterCard, twitterImages } =
+    openGraphAndTwitterImages(ogAbs, title)
 
   return {
     title,
@@ -40,13 +44,13 @@ export async function generateMetadata({
       url: canonical,
       title,
       description,
-      images: service.image ? [{ url: service.image, alt: title }] : undefined,
+      ...(openGraphImages ? { images: openGraphImages } : {}),
     },
     twitter: {
-      card: service.image ? "summary_large_image" : "summary",
+      card: twitterCard,
       title,
       description,
-      images: service.image ? [service.image] : undefined,
+      ...(twitterImages ? { images: twitterImages } : {}),
     },
   }
 }

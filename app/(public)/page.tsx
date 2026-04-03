@@ -5,6 +5,10 @@ import type { Metadata } from "next"
 import { getOrCreateSettings } from "@/lib/db/settings"
 import type { SectionData, PageData } from "@/types/cms"
 import { canonicalUrl, getBaseUrl } from "@/lib/seo"
+import {
+  openGraphAndTwitterImages,
+  resolveBannerAndSectionOgImage,
+} from "@/lib/og-image"
 import SeoJsonLd from "@/components/seo/SeoJsonLd"
 
 export const revalidate = 60
@@ -32,11 +36,24 @@ export async function generateMetadata(): Promise<Metadata> {
   }
   const page = await prisma.page.findUnique({
     where: { id: settings.homePageId },
+    include: {
+      sections: {
+        where: { isVisible: true },
+        orderBy: { order: "asc" },
+      },
+    },
   })
   if (page && page.isPublished) {
     const canonical = canonicalUrl("/")
     const title = page.metaTitle || page.title
     const description = page.metaDescription || undefined
+    const ogAbs = resolveBannerAndSectionOgImage(
+      page.bannerImage,
+      page.bannerBackgroundImage,
+      page.sections
+    )
+    const { openGraphImages, twitterCard, twitterImages } =
+      openGraphAndTwitterImages(ogAbs, title)
     return {
       title,
       description,
@@ -46,11 +63,13 @@ export async function generateMetadata(): Promise<Metadata> {
         url: canonical,
         title,
         description,
+        ...(openGraphImages ? { images: openGraphImages } : {}),
       },
       twitter: {
-        card: "summary",
+        card: twitterCard,
         title,
         description,
+        ...(twitterImages ? { images: twitterImages } : {}),
       },
     }
   }
