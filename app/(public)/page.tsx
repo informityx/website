@@ -9,6 +9,12 @@ import {
   openGraphAndTwitterImages,
   resolveBannerAndSectionOgImage,
 } from "@/lib/og-image"
+import {
+  documentTitle,
+  withDefaultMetaDescription,
+  withDefaultMetaTitle,
+  withDefaultOgImageUrl,
+} from "@/lib/site-seo-defaults"
 import SeoJsonLd from "@/components/seo/SeoJsonLd"
 
 export const revalidate = 60
@@ -17,20 +23,27 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getOrCreateSettings()
   if (!settings.homePageId) {
     const canonical = canonicalUrl("/")
+    const title = documentTitle()
+    const description = withDefaultMetaDescription(undefined)
+    const ogAbs = withDefaultOgImageUrl(undefined)
+    const { openGraphImages, twitterCard, twitterImages } =
+      openGraphAndTwitterImages(ogAbs, title)
     return {
-      title: "Home",
-      description: "Welcome to our CMS",
+      title,
+      description,
       alternates: { canonical },
       openGraph: {
         type: "website",
         url: canonical,
-        title: "Home",
-        description: "Welcome to our CMS",
+        title,
+        description,
+        ...(openGraphImages ? { images: openGraphImages } : {}),
       },
       twitter: {
-        card: "summary",
-        title: "Home",
-        description: "Welcome to our CMS",
+        card: twitterCard,
+        title,
+        description,
+        ...(twitterImages ? { images: twitterImages } : {}),
       },
     }
   }
@@ -45,12 +58,16 @@ export async function generateMetadata(): Promise<Metadata> {
   })
   if (page && page.isPublished) {
     const canonical = canonicalUrl("/")
-    const title = page.metaTitle || page.title
-    const description = page.metaDescription || undefined
-    const ogAbs = resolveBannerAndSectionOgImage(
-      page.bannerImage,
-      page.bannerBackgroundImage,
-      page.sections
+    const title = documentTitle(
+      withDefaultMetaTitle(page.metaTitle || page.title)
+    )
+    const description = withDefaultMetaDescription(page.metaDescription)
+    const ogAbs = withDefaultOgImageUrl(
+      resolveBannerAndSectionOgImage(
+        page.bannerImage,
+        page.bannerBackgroundImage,
+        page.sections
+      )
     )
     const { openGraphImages, twitterCard, twitterImages } =
       openGraphAndTwitterImages(ogAbs, title)
@@ -74,20 +91,27 @@ export async function generateMetadata(): Promise<Metadata> {
     }
   }
   const canonical = canonicalUrl("/")
+  const title = documentTitle()
+  const description = withDefaultMetaDescription(undefined)
+  const ogAbs = withDefaultOgImageUrl(undefined)
+  const { openGraphImages, twitterCard, twitterImages } =
+    openGraphAndTwitterImages(ogAbs, title)
   return {
-    title: "Home",
-    description: "Welcome to our CMS",
+    title,
+    description,
     alternates: { canonical },
     openGraph: {
       type: "website",
       url: canonical,
-      title: "Home",
-      description: "Welcome to our CMS",
+      title,
+      description,
+      ...(openGraphImages ? { images: openGraphImages } : {}),
     },
     twitter: {
-      card: "summary",
-      title: "Home",
-      description: "Welcome to our CMS",
+      card: twitterCard,
+      title,
+      description,
+      ...(twitterImages ? { images: twitterImages } : {}),
     },
   }
 }

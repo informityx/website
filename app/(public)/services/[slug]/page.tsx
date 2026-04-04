@@ -4,6 +4,12 @@ import Image from "next/image"
 import type { Metadata } from "next"
 import { canonicalUrl, getBaseUrl } from "@/lib/seo"
 import { openGraphAndTwitterImages, toAbsoluteOgImageUrl } from "@/lib/og-image"
+import {
+  documentTitle,
+  withDefaultMetaDescription,
+  withDefaultMetaTitle,
+  withDefaultOgImageUrl,
+} from "@/lib/site-seo-defaults"
 import { getOrCreateSettings } from "@/lib/db/settings"
 import SeoJsonLd from "@/components/seo/SeoJsonLd"
 
@@ -29,9 +35,11 @@ export async function generateMetadata({
   }
 
   const canonical = canonicalUrl(`/services/${service.slug}`)
-  const title = service.title
-  const description = service.description || service.shortDescription || undefined
-  const ogAbs = toAbsoluteOgImageUrl(service.image)
+  const title = documentTitle(withDefaultMetaTitle(service.title))
+  const description = withDefaultMetaDescription(
+    service.description || service.shortDescription
+  )
+  const ogAbs = withDefaultOgImageUrl(toAbsoluteOgImageUrl(service.image))
   const { openGraphImages, twitterCard, twitterImages } =
     openGraphAndTwitterImages(ogAbs, title)
 

@@ -16,6 +16,12 @@ import {
   toAbsoluteOgImageUrl,
   firstImageFromVisibleSections,
 } from "@/lib/og-image"
+import {
+  documentTitle,
+  withDefaultMetaDescription,
+  withDefaultMetaTitle,
+  withDefaultOgImageUrl,
+} from "@/lib/site-seo-defaults"
 
 const RESERVED_FIRST_SEGMENTS = ["services", "admin", "admin-login", "api", "media"]
 
@@ -49,16 +55,21 @@ export async function generateMetadata({
     if (customType) {
       const card = findCardInCptSections(customType.sections, slug[1])
       if (card) {
-        const title = `${card.heading} | ${customType.name}`
-        const description = cardMetaDescription(card)
+        const title = documentTitle(card.heading, customType.name)
+        const description = withDefaultMetaDescription(
+          cardMetaDescription(card)
+        )
         const rawOg =
           card.image?.trim() ||
           customType.bannerImage?.trim() ||
           firstImageFromVisibleSections(customType.sections) ||
           customType.bannerBackgroundImage?.trim()
-        const ogAbs = toAbsoluteOgImageUrl(rawOg)
+        const ogAbs = withDefaultOgImageUrl(toAbsoluteOgImageUrl(rawOg))
         const { openGraphImages, twitterCard, twitterImages } =
-          openGraphAndTwitterImages(ogAbs, card.heading)
+          openGraphAndTwitterImages(
+            ogAbs,
+            card.heading?.trim() || customType.name
+          )
         return {
           title,
           description,
@@ -92,12 +103,16 @@ export async function generateMetadata({
   })
 
   if (page?.isPublished) {
-    const title = page.metaTitle || page.title
-    const description = page.metaDescription || undefined
-    const ogAbs = resolveBannerAndSectionOgImage(
-      page.bannerImage,
-      page.bannerBackgroundImage,
-      page.sections
+    const title = documentTitle(
+      withDefaultMetaTitle(page.metaTitle || page.title)
+    )
+    const description = withDefaultMetaDescription(page.metaDescription)
+    const ogAbs = withDefaultOgImageUrl(
+      resolveBannerAndSectionOgImage(
+        page.bannerImage,
+        page.bannerBackgroundImage,
+        page.sections
+      )
     )
     const { openGraphImages, twitterCard, twitterImages } =
       openGraphAndTwitterImages(ogAbs, title)
@@ -132,12 +147,16 @@ export async function generateMetadata({
       },
     })
     if (customType) {
-      const title = customType.name
-      const description = customType.bannerText || customType.bannerTitle || undefined
-      const ogAbs = resolveBannerAndSectionOgImage(
-        customType.bannerImage,
-        customType.bannerBackgroundImage,
-        customType.sections
+      const title = documentTitle(withDefaultMetaTitle(customType.name))
+      const description = withDefaultMetaDescription(
+        customType.bannerText || customType.bannerTitle
+      )
+      const ogAbs = withDefaultOgImageUrl(
+        resolveBannerAndSectionOgImage(
+          customType.bannerImage,
+          customType.bannerBackgroundImage,
+          customType.sections
+        )
       )
       const { openGraphImages, twitterCard, twitterImages } =
         openGraphAndTwitterImages(ogAbs, title)

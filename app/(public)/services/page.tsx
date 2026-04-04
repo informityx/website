@@ -2,13 +2,20 @@ import { prisma } from "@/lib/db/prisma"
 import ServiceList from "@/components/public/services/ServiceList"
 import type { Metadata } from "next"
 import { canonicalUrl, getBaseUrl } from "@/lib/seo"
+import {
+  DEFAULT_META_TITLE,
+  DEFAULT_OG_IMAGE_URL,
+  documentTitle,
+} from "@/lib/site-seo-defaults"
 import { getOrCreateSettings } from "@/lib/db/settings"
 import SeoJsonLd from "@/components/seo/SeoJsonLd"
 
 export const revalidate = 60
 
+const servicesPageTitle = documentTitle("Services")
+
 export const metadata: Metadata = {
-  title: "Services",
+  title: servicesPageTitle,
   description: "Our services and offerings",
   alternates: {
     canonical: canonicalUrl("/services"),
@@ -16,13 +23,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: canonicalUrl("/services"),
-    title: "Services",
+    title: servicesPageTitle,
     description: "Our services and offerings",
+    images: [{ url: DEFAULT_OG_IMAGE_URL, alt: DEFAULT_META_TITLE }],
   },
   twitter: {
-    card: "summary",
-    title: "Services",
+    card: "summary_large_image",
+    title: servicesPageTitle,
     description: "Our services and offerings",
+    images: [DEFAULT_OG_IMAGE_URL],
   },
 }
 
