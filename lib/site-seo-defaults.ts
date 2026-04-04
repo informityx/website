@@ -22,7 +22,7 @@ export const DEFAULT_META_DESCRIPTION =
   "We partner with ambitious businesses to transform ideas into AI-powered, scalable digital solutions — combining strategy, engineering, and cutting-edge technology to drive real growth."
 
 export const DEFAULT_OG_IMAGE_URL =
-  "https://67urebutdkgdnnmw.public.blob.vercel-storage.com/header/750x150-text-removebg-preview-1774631882890-O8j1PjqJStTZEma9ePqJYmmiOzDo6o.png"
+  "https://67urebutdkgdnnmw.public.blob.vercel-storage.com/page-banner-image/final-logo-v-1773093965921-8AtGUPnAGGPvnJRBaJSHp1uWKIxZzz.png"
 
 export function withDefaultMetaTitle(
   value: string | null | undefined

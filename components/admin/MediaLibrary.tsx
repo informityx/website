@@ -23,6 +23,7 @@ export default function MediaLibrary() {
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [copiedKey, setCopiedKey] = useState<string | null>(null)
   const [prefix, setPrefix] = useState("")
 
   const loadMedia = useCallback(
@@ -75,6 +76,21 @@ export default function MediaLibrary() {
     } finally {
       setUploading(false)
       e.target.value = ""
+    }
+  }
+
+  const copyPublicUrlToClipboard = async (blob: StorageBlob) => {
+    const text = blob.url?.trim()
+    if (!text) {
+      alert("No URL available for this file")
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopiedKey(blob.url)
+      window.setTimeout(() => setCopiedKey((k) => (k === blob.url ? null : k)), 2000)
+    } catch {
+      alert("Could not copy to clipboard")
     }
   }
 
@@ -169,6 +185,14 @@ export default function MediaLibrary() {
                     }}
                   />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => copyPublicUrlToClipboard(blob)}
+                      className="px-3 py-1.5 bg-white text-gray-900 text-sm rounded hover:bg-gray-100 border border-gray-200"
+                      title={`Copy URL: ${blob.url}`}
+                    >
+                      {copiedKey === blob.url ? "Copied!" : "Copy URL"}
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleDelete(blob.url)}

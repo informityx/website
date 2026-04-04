@@ -28,6 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const ogAbs = withDefaultOgImageUrl(undefined)
     const { openGraphImages, twitterCard, twitterImages } =
       openGraphAndTwitterImages(ogAbs, title)
+    console.log("title", title, ogAbs, openGraphImages, twitterCard, twitterImages)
     return {
       title,
       description,
