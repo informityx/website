@@ -29,7 +29,7 @@ export default function CardDetailPage({
 
   return (
     <>
-      <div className="container mx-auto px-4 pt-2 pb-6 md:pt-4 md:pb-8">
+      <div className="container mx-auto px-4 pt-6 pb-6 md:pt-8 md:pb-8">
         <nav className="text-sm text-gray-600" aria-label="Breadcrumb">
           <Link href="/" className="hover:text-brand-primary">
             Home
@@ -45,6 +45,7 @@ export default function CardDetailPage({
 
       {card.image ? (
         <div className="relative w-full min-h-[220px] sm:min-h-[300px] md:min-h-[380px] h-[38vh] max-h-[520px]">
+          sssss
           <Image
             src={card.image}
             alt={card.heading}
