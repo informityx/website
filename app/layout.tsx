@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   title: defaultDocumentTitle,
   description: DEFAULT_META_DESCRIPTION,
   metadataBase: new URL(baseUrl),
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+    shortcut: "/favicon.ico",
+  },
   openGraph: {
     type: "website",
     title: defaultDocumentTitle,
@@ -50,7 +55,16 @@ export default function RootLayout({
           data-uuid="62496b2d-eef4-490f-8ce9-71a135f4f6b3"
           src={searchAtlasDynamicOptimizationSrc}
           {...{ nowprocket: "", "nitro-exclude": "" }}
-        />
+        ></script>
+        
+        <script
+  src="https://greenfield-chat-widget-web.vercel.app/widget.js"
+  defer
+  data-site-id="demo-site"
+  data-publishable-key="pk_65673ca35cf4d1ca2b6d2be9240bd452a9ce8bd23a2e85c5"
+  data-locale="en"
+></script>
+
       </head>
       <body className={inter.className}>
         <Providers>{children}</Providers>

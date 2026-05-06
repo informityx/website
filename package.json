@@ -23,7 +23,7 @@
     "cms:add-home-ai-capabilities-cpt": "tsx scripts/add-home-ai-capabilities-cpt.ts",
     "cms:verify-home-services-cpt": "tsx scripts/verify-home-services-cpt.ts",
     "db:url": "echo $DATABASE_URL",
-    "db:backup": "pg_dump $DATABASE_URL -Fc -b -v -f db/cms_$(date +%Y%m%d_%H%M%S).backup"
+    "db:backup": "pg_dump \"$DATABASE_URL\" -Fc -b -v -f db/cms_$(date +%Y%m%d_%H%M%S).backup && pg_dump \"$DATABASE_URL\" -Fp -v -f db/cms_$(date +%Y%m%d_%H%M%S).sql"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
