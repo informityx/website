@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 import { notifyClientOnboardingSubmission } from "@/lib/email"
 import { prisma } from "@/lib/db/prisma"
+import { clientOnboardingPayloadSchema } from "@/lib/forms/clientOnboardingSchema"
 import { z } from "zod"
-
-const clientOnboardingSchema = z.object({
-  companyName: z.string().min(1, "Company name is required"),
-  mainPointOfContact: z.string().min(1, "Main point of contact is required"),
-  budgetRange: z.string().min(1, "Budget range is required"),
-}).passthrough()
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const validated = clientOnboardingSchema.parse(body)
+    const validated = clientOnboardingPayloadSchema.parse(body)
 
     const submission = await prisma.clientOnboardingSubmission.create({
       data: {
@@ -29,7 +24,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: error.errors.map((e) => e.message).join(", ") },
+        { error: error.issues.map((e) => e.message).join(", ") },
         { status: 400 }
       )
     }

@@ -2,6 +2,10 @@
 
 import { createContext, useContext, useState, type ReactNode } from "react"
 import toast from "react-hot-toast"
+import {
+  clientOnboardingPayloadSchema,
+  flattenZodFieldErrors,
+} from "@/lib/forms/clientOnboardingSchema"
 import ModalShell from "./ui/ModalShell"
 
 const IconBuilding = ({ className }: { className?: string }) => (
@@ -111,10 +115,15 @@ export function ClientOnboardingModalProvider({ children }: { children: ReactNod
 function ClientOnboardingModalContent({ onClose }: { onClose: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+
+  const inClass = (name: string) =>
+    `${inputClass}${fieldErrors[name] ? " border-red-400 focus:ring-red-400/50 focus:border-red-400" : ""}`
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
+    setFieldErrors({})
     setIsSubmitting(true)
 
     const form = e.currentTarget
@@ -124,8 +133,9 @@ function ClientOnboardingModalContent({ onClose }: { onClose: () => void }) {
       // Step 1: Company Info
       companyName: formData.get("companyName")?.toString() ?? "",
       mainPointOfContact: formData.get("mainPointOfContact")?.toString() ?? "",
+      email: formData.get("email")?.toString() ?? "",
+      phone: formData.get("phone")?.toString() ?? "",
       preferredCommunicationChannel: formData.get("preferredCommunicationChannel")?.toString() ?? "",
-      contactInfo: formData.get("contactInfo")?.toString() ?? "",
       // Step 2: About Your Business
       companyDescription: formData.get("companyDescription")?.toString() ?? "",
       targetCustomer: formData.get("targetCustomer")?.toString() ?? "",
@@ -153,11 +163,18 @@ function ClientOnboardingModalContent({ onClose }: { onClose: () => void }) {
       longTermGoals: formData.get("longTermGoals")?.toString() ?? "",
     }
 
+    const parsed = clientOnboardingPayloadSchema.safeParse(data)
+    if (!parsed.success) {
+      setFieldErrors(flattenZodFieldErrors(parsed.error))
+      setIsSubmitting(false)
+      return
+    }
+
     try {
       const res = await fetch("/api/forms/client-onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(parsed.data),
       })
 
       if (!res.ok) {
@@ -165,6 +182,7 @@ function ClientOnboardingModalContent({ onClose }: { onClose: () => void }) {
         throw new Error(err.error ?? "Failed to submit")
       }
       toast.success("Questionnaire submitted successfully! Thank you.")
+      setFieldErrors({})
       onClose()
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong"
@@ -211,8 +229,40 @@ function ClientOnboardingModalContent({ onClose }: { onClose: () => void }) {
               </select>
             </div>
             <div>
-              <label className={labelClass}>Contact Info</label>
-              <input type="text" name="contactInfo" placeholder="Email, phone, etc." className={inputClass} />
+              <label className={labelClass}>Email <span className="text-brand-primary">*</span></label>
+              <input
+                type="email"
+                name="email"
+                required
+                maxLength={254}
+                placeholder="contact@company.com"
+                className={inClass("email")}
+                aria-invalid={!!fieldErrors.email}
+              />
+              {fieldErrors.email && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
+              )}
+            </div>
+            <div>
+              <label className={labelClass}>Phone <span className="text-brand-primary">*</span></label>
+              <input
+                type="tel"
+                name="phone"
+                required
+                inputMode="tel"
+                autoComplete="tel"
+                maxLength={40}
+                placeholder="+1 (555) 123-4567"
+                className={inClass("phone")}
+                aria-invalid={!!fieldErrors.phone}
+              />
+              {fieldErrors.phone ? (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.phone}</p>
+              ) : (
+                <p className="mt-1 text-xs text-gray-500">
+                  10–15 digits (formatting characters are ignored).
+                </p>
+              )}
             </div>
           </div>
         </div>

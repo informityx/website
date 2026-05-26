@@ -6,6 +6,8 @@ const LABELS: Record<string, string> = {
   companyName: "Company Name",
   mainPointOfContact: "Main Point of Contact",
   preferredCommunicationChannel: "Preferred Communication Channel",
+  email: "Email",
+  phone: "Phone",
   contactInfo: "Contact Info",
   companyDescription: "What does your company do?",
   targetCustomer: "Who is your target customer?",

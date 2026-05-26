@@ -30,6 +30,16 @@ export function wrapHtmlEmail(title: string, rowsHtml: string): string {
 </html>`
 }
 
+export function wrapHtmlLetter(title: string, bodyHtml: string): string {
+  return `<!DOCTYPE html>
+<html>
+  <body style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#111827;max-width:560px;">
+    <h2 style="margin:0 0 16px;font-size:20px;">${escapeHtml(title)}</h2>
+    ${bodyHtml}
+  </body>
+</html>`
+}
+
 export function formatBoolean(value: boolean | undefined): string {
   if (value === undefined) return "—"
   return value ? "Yes" : "No"

@@ -140,37 +140,35 @@ export default function CTAInlineProjectForm() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="cta-email" className={labelClass}>
-              Email
+              Email <span className="text-brand-primary">*</span>
             </label>
             <input
               id="cta-email"
               type="email"
               name="email"
+              required
               autoComplete="email"
               placeholder="you@company.com"
               maxLength={254}
               className={inClass("email")}
               aria-invalid={!!fieldErrors.email}
-              aria-describedby={
-                fieldErrors.email ? "cta-email-err" : "cta-email-hint"
-              }
+              aria-describedby={fieldErrors.email ? "cta-email-err" : undefined}
             />
-            {fieldErrors.email ? (
+            {fieldErrors.email && (
               <p id="cta-email-err" className="mt-1 text-sm text-red-300" role="alert">
                 {fieldErrors.email}
               </p>
-            ) : (
-              fieldHint("cta-email-hint", "Required unless you add a contact number below.")
             )}
           </div>
           <div>
             <label htmlFor="cta-phone" className={labelClass}>
-              Contact number
+              Contact number <span className="text-brand-primary">*</span>
             </label>
             <input
               id="cta-phone"
               type="tel"
               name="phone"
+              required
               inputMode="tel"
               autoComplete="tel"
               placeholder="+1 555 123 4567"
@@ -186,7 +184,7 @@ export default function CTAInlineProjectForm() {
                 {fieldErrors.phone}
               </p>
             ) : (
-              fieldHint("cta-phone-hint", "10–15 digits if used; required if no email.")
+              fieldHint("cta-phone-hint", "10–15 digits (formatting characters are ignored).")
             )}
           </div>
         </div>

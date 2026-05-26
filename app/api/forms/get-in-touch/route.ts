@@ -16,8 +16,8 @@ export async function POST(request: NextRequest) {
     const submission = await prisma.getInTouchSubmission.create({
       data: {
         fullName: data.fullName,
-        email: data.email ?? null,
-        phone: data.phone?.trim() || null,
+        email: data.email,
+        phone: data.phone,
         company: data.company ?? null,
         inquiryType: data.inquiryType || "",
         budget: data.budget ?? null,

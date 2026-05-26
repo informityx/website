@@ -1,11 +1,13 @@
 import { formatFieldHtml, formatRecordFields, wrapHtmlEmail } from "../format"
 import { sendMailSafe } from "../sendMail"
+import { sendUserThankYouEmail } from "./userConfirmation"
 
 const CLIENT_ONBOARDING_LABELS: Record<string, string> = {
   companyName: "Company name",
   mainPointOfContact: "Main point of contact",
+  email: "Email",
+  phone: "Phone",
   preferredCommunicationChannel: "Preferred communication channel",
-  contactInfo: "Contact info",
   companyDescription: "Company description",
   targetCustomer: "Target customer",
   businessUnique: "What makes the business unique",
@@ -38,14 +40,12 @@ export async function notifyClientOnboardingSubmission(
 ): Promise<void> {
   const companyName =
     typeof input.data.companyName === "string" ? input.data.companyName.trim() : ""
-  const contactInfo =
-    typeof input.data.contactInfo === "string" ? input.data.contactInfo.trim() : ""
+  const email = typeof input.data.email === "string" ? input.data.email.trim() : ""
   const mainPointOfContact =
     typeof input.data.mainPointOfContact === "string"
       ? input.data.mainPointOfContact.trim()
       : ""
 
-  const replyTo = contactInfo.includes("@") ? contactInfo : undefined
   const subjectCompany = companyName || "Unknown company"
   const { text, htmlRows } = formatRecordFields(input.data, CLIENT_ONBOARDING_LABELS)
 
@@ -64,8 +64,16 @@ export async function notifyClientOnboardingSubmission(
         "New Client Onboarding submission",
         [formatFieldHtml("Submission ID", input.submissionId), htmlRows].join("")
       ),
-      replyTo,
+      replyTo: email || undefined,
     },
     `client-onboarding submission ${input.submissionId}`
   )
+
+  if (email) {
+    await sendUserThankYouEmail({
+      to: email,
+      recipientName: mainPointOfContact || companyName,
+      formLabel: "completing the InforMityx client onboarding questionnaire",
+    })
+  }
 }

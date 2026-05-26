@@ -205,31 +205,29 @@ function GetInTouchModalContent({ onClose }: { onClose: () => void }) {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
+                Email <span className="text-brand-primary">*</span>
               </label>
               <input
                 type="email"
                 name="email"
+                required
                 maxLength={254}
                 placeholder="your.email@example.com"
                 className={inClass("email")}
                 aria-invalid={!!fieldErrors.email}
               />
-              {fieldErrors.email ? (
+              {fieldErrors.email && (
                 <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
-              ) : (
-                <p className="mt-1 text-xs text-gray-500">
-                  Required unless you add a valid phone number (10–15 digits).
-                </p>
               )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Contact number
+                Contact number <span className="text-brand-primary">*</span>
               </label>
               <input
                 type="tel"
                 name="phone"
+                required
                 inputMode="tel"
                 autoComplete="tel"
                 maxLength={40}
@@ -241,7 +239,7 @@ function GetInTouchModalContent({ onClose }: { onClose: () => void }) {
                 <p className="mt-1 text-sm text-red-600">{fieldErrors.phone}</p>
               ) : (
                 <p className="mt-1 text-xs text-gray-500">
-                  Required if no email. Digits only count toward 10–15 length.
+                  10–15 digits (formatting characters are ignored).
                 </p>
               )}
             </div>
