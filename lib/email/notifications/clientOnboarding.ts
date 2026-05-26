@@ -1,0 +1,71 @@
+import { formatFieldHtml, formatRecordFields, wrapHtmlEmail } from "../format"
+import { sendMailSafe } from "../sendMail"
+
+const CLIENT_ONBOARDING_LABELS: Record<string, string> = {
+  companyName: "Company name",
+  mainPointOfContact: "Main point of contact",
+  preferredCommunicationChannel: "Preferred communication channel",
+  contactInfo: "Contact info",
+  companyDescription: "Company description",
+  targetCustomer: "Target customer",
+  businessUnique: "What makes the business unique",
+  problemSolving: "Problem being solved",
+  desiredCoreFeatures: "Desired core features",
+  existingSystem: "Existing system",
+  technicalConstraints: "Technical constraints",
+  competitorsAdmire: "Competitors admired",
+  logoBrandGuide: "Logo / brand guide",
+  colorPreferences: "Color preferences",
+  toneOfVoice: "Tone of voice",
+  paymentGateways: "Payment gateways",
+  specificIntegrations: "Specific integrations",
+  adminControlExpectations: "Admin control expectations",
+  gdprRequired: "GDPR required",
+  termsPrivacyAvailable: "Terms / privacy available",
+  idealLaunchDate: "Ideal launch date",
+  budgetRange: "Budget range",
+  postMvpFeatures: "Post-MVP features",
+  longTermGoals: "Long-term goals",
+}
+
+export type ClientOnboardingNotificationInput = {
+  submissionId: string
+  data: Record<string, unknown>
+}
+
+export async function notifyClientOnboardingSubmission(
+  input: ClientOnboardingNotificationInput
+): Promise<void> {
+  const companyName =
+    typeof input.data.companyName === "string" ? input.data.companyName.trim() : ""
+  const contactInfo =
+    typeof input.data.contactInfo === "string" ? input.data.contactInfo.trim() : ""
+  const mainPointOfContact =
+    typeof input.data.mainPointOfContact === "string"
+      ? input.data.mainPointOfContact.trim()
+      : ""
+
+  const replyTo = contactInfo.includes("@") ? contactInfo : undefined
+  const subjectCompany = companyName || "Unknown company"
+  const { text, htmlRows } = formatRecordFields(input.data, CLIENT_ONBOARDING_LABELS)
+
+  const bodyText = [
+    `Submission ID: ${input.submissionId}`,
+    `Main point of contact: ${mainPointOfContact || "—"}`,
+    "",
+    text,
+  ].join("\n")
+
+  await sendMailSafe(
+    {
+      subject: `[Client onboarding] ${subjectCompany}`,
+      text: bodyText,
+      html: wrapHtmlEmail(
+        "New Client Onboarding submission",
+        [formatFieldHtml("Submission ID", input.submissionId), htmlRows].join("")
+      ),
+      replyTo,
+    },
+    `client-onboarding submission ${input.submissionId}`
+  )
+}

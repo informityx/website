@@ -1,0 +1,12 @@
+docs/articles/40-Day MVP_ End-to-End Case Study 04_09.pdf
+docs/articles/AI-Powered Digital Solutions for Healthcare 04_09.pdf
+docs/articles/Balancing Cost and Performance at Scale 04_09.pdf
+docs/articles/Compliance Mapping for SaaS and AI Products 04_09.pdf
+docs/articles/Data Protection Strategies and Encryption Best Practices 04_09.pdf
+docs/articles/E-commerce Platforms and AI-Powered Commerce 04_09.pdf
+docs/articles/Go-to-Market Strategy for Scalable Digital Products 04_09.pdf
+docs/articles/How AI Integration Changes Product Design 04_09.pdf
+docs/articles/Measuring MVP Success and Next Steps 04_09.pdf
+docs/articles/Rapid Prototyping and Usability Testing Methods 04_09.pdf
+docs/articles/Strategic Planning for AI-Powered Products 04_09.pdf
+docs/articles/Using Large Language Models in Consumer Products 04_09.pdf

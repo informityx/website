@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { notifyGetInTouchSubmission } from "@/lib/email"
 import { prisma } from "@/lib/db/prisma"
 import { getInTouchPayloadSchema } from "@/lib/forms/getInTouchSchema"
 import { z } from "zod"
@@ -24,6 +25,12 @@ export async function POST(request: NextRequest) {
         subject,
         message: data.message || "",
       },
+    })
+
+    await notifyGetInTouchSubmission({
+      ...data,
+      submissionId: submission.id,
+      subject,
     })
 
     return NextResponse.json({ id: submission.id }, { status: 201 })

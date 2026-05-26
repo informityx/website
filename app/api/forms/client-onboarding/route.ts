@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { notifyClientOnboardingSubmission } from "@/lib/email"
 import { prisma } from "@/lib/db/prisma"
 import { z } from "zod"
 
@@ -17,6 +18,11 @@ export async function POST(request: NextRequest) {
       data: {
         data: validated as object,
       },
+    })
+
+    await notifyClientOnboardingSubmission({
+      submissionId: submission.id,
+      data: validated as Record<string, unknown>,
     })
 
     return NextResponse.json({ id: submission.id }, { status: 201 })

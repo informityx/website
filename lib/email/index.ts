@@ -1,0 +1,4 @@
+export { getEmailConfig, isEmailConfigured } from "./config"
+export { sendMail, sendMailSafe, type SendMailOptions, type SendMailResult } from "./sendMail"
+export { notifyGetInTouchSubmission } from "./notifications/getInTouch"
+export { notifyClientOnboardingSubmission } from "./notifications/clientOnboarding"

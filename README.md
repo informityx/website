@@ -53,7 +53,19 @@ NEXTAUTH_URL="http://localhost:3000"
 
 # Optional: Public URL for sitemap
 NEXT_PUBLIC_URL="http://localhost:3000"
+
+# SMTP — form notification emails (Namecheap Private Email)
+SMTP_HOST="mail.privateemail.com"
+SMTP_PORT="465"
+SMTP_SECURE="true"
+SMTP_USER="info@informityx.ai"
+SMTP_PASSWORD="your-private-email-password"
+MAIL_FROM="info@informityx.ai"
+MAIL_FROM_NAME="InforMityx"
+MAIL_TO="info@informityx.ai"
 ```
+
+Copy `.env.example` to `.env.local` and fill in real values. Form submissions are always saved to the database; when SMTP is configured, admin notification emails are sent via `lib/email/`. If SMTP is missing, submissions still succeed and a warning is logged server-side.
 
 3. Set up the database:
 
